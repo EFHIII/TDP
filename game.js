@@ -1,3 +1,28 @@
+const gameMaps=[
+  {
+    title:"Test map",
+    grid:[
+      "##########",
+      "#++++++++#",
+      "#++++++++#",
+      "#+++##+++#",
+      "#++++++++#",
+      "#+++##+++#",
+      "#+++##+++###",
+      "#+S+##+++GG#",
+      "#+++##+++GG#",
+      "############",
+    ]
+  }
+];
+
+const player={
+  x:0,
+  y:0,
+  vx:0,
+  vy:0
+};
+
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
 
