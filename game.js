@@ -105,7 +105,6 @@ function setup() {
   smooth();
 
   inconsolata = loadFont('Inconsolata.otf');
-  textFont(inconsolata);
 }
 
 function maxHist(R, C, row) {
@@ -662,7 +661,7 @@ function drawMap(){
   fill(250);
   //textAlign(LEFT,TOP);
 
-  textFont("Arial");
+  textFont(inconsolata);
   text("Test",50,50);
   //text((frameRate()*100>>0)/100,50,50);
 }
