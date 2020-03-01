@@ -98,6 +98,8 @@ var doubleJump=false;
 var spinning=false;
 var spin=0;
 
+var inconsolata;
+
 function preload() {
   inconsolata = loadFont('Inconsolata.otf');
 }
