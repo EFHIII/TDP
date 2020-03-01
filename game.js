@@ -264,37 +264,34 @@ function drawTile(x,y,s){
   pop();
 }
 const dirAr=[[0,1],[-1,0],[0,-1],[1,0]];
-function drawBox(x,y,h,ca,cb){
-  fill(ca?ca:90+h*10);
+function drawBox(x,y,w,h,z,ca,cb){
+  fill(ca?ca:90+z*10);
   push();
-    translate(x*tileSize,y*tileSize,(h-1)*tileSize);
-    plane(tileSize);
+    translate((x+w/2-0.5)*tileSize,(y+h/2-0.5)*tileSize,(z-1)*tileSize);
+    plane(w*tileSize,h*tileSize);
     fill(cb?cb:40);
   for(let k=0;k<4;k++){
-    if(getGround(x+dirAr[k][0],y+dirAr[k][1])>=h){
-      continue;
-    }
     push();
       rotateZ(PI/2*k);
-      translate(0,tileSize/2,-tileSize/2*h*ZMAG);
+      translate(0,tileSize/2*(k%2?w:h),-tileSize/2*z*ZMAG);
       rotateX(PI/2);
-      plane(tileSize,tileSize*h*ZMAG);
+      plane(tileSize*(k%2?h:w),tileSize*z*ZMAG);
     pop();
   }
   pop();
 }
 
-function triangleBox(x,y,h,r){
+function triangleBox(x,y,z,r){
   push();
-    translate(x*tileSize,y*tileSize,(-(h+1)/2+0.5)*tileSize*ZMAG);
+    translate(x*tileSize,y*tileSize,(-(z+1)/2+0.5)*tileSize*ZMAG);
     rotateZ(PI/4*r);
     rotateX(PI/2);
-    plane(tileSize*1.4142135623730951,tileSize*h*ZMAG);
+    plane(tileSize*1.4142135623730951,tileSize*z*ZMAG);
   pop();
 
   fill(100);
   push();
-  translate(x*tileSize,y*tileSize,(h-1)*tileSize*ZMAG);
+  translate(x*tileSize,y*tileSize,(z-1)*tileSize*ZMAG);
   rotateZ(-PI/4*(r-3)*45);
   triangle(
     0.5*tileSize,-0.5*tileSize,
@@ -502,26 +499,13 @@ function stepPlayer(){
   }
 
 }
-
 function drawPlayer(){
-
   stepPlayer();
   stepPlayer();
   stepPlayer();
 
-  while(trail.length>128){
+  while(trail.length>256){
     trail.shift();
-  }
-
-
-  for(var i=trail.length-1;i>=0;i--){
-    let a=i/128;
-    let b=(1-a)*(90+(trail[i][2])*10);
-    fill(80,180,250,i);
-    push();
-      translate(trail[i][0]*tileSize,trail[i][1]*tileSize,tileSize*ZMAG*(trail[i][2]-0.99));
-      ellipse(0,0,tileSize*player.d/3,tileSize*player.d/3);
-    pop();
   }
 
   fill(30,130,200);
@@ -529,6 +513,18 @@ function drawPlayer(){
     translate(player.x*tileSize,player.y*tileSize,tileSize*ZMAG*(player.z-0.99));
     ellipse(0,0,tileSize*player.d,tileSize*player.d);
   pop();
+
+  /*
+  for(var i=trail.length-1;i>=0;i--){
+    let a=i/256;
+    let b=(1-a)*(90+(trail[i][2])*10);
+    fill(80,180,250,i);
+    push();
+      translate(trail[i][0]*tileSize,trail[i][1]*tileSize,tileSize*ZMAG*(trail[i][2]-0.99)-0.1);
+      ellipse(0,0,tileSize*player.d/3,tileSize*player.d/3);
+    pop();
+  }
+  */
 }
 
 let fps=[];
@@ -581,31 +577,6 @@ function drawMap(){
           fill(40);
           triangleBox(j,i,1,5);
         break;
-        case("#"):
-          //drawBox(j,i,1);
-        break;
-        case("w"):
-          //drawBox(j,i,4,color(60,65,70),color(50,55,60));
-        break;
-        case("S"):
-        case("+"):
-        /*
-          push();
-            translate(0,0,-tileSize*ZMAG);
-            fill(90);
-            drawTile(j*tileSize,i*tileSize);
-          pop();
-          */
-        break;
-        case("G"):
-        /*
-          push();
-            fill(50,150,50);
-            translate(0,0,-tileSize*ZMAG);
-            drawTile(j*tileSize,i*tileSize);
-          pop();
-          */
-        break;
       }
     }
   }
@@ -639,32 +610,10 @@ function drawMap(){
     pop();
   }
   for(let i=0;i<div.rail.length;i++){
-    push();
-      //translate(0,0,-tileSize*ZMAG);
-      fill(100);
-      push();
-        translate(
-          (div.rail[i].x-0.5+div.rail[i].w/2)*tileSize,
-          (div.rail[i].y-0.5+div.rail[i].h/2)*tileSize);
-        plane(
-          tileSize*div.rail[i].w,
-          tileSize*div.rail[i].h);
-      pop();
-    pop();
+    drawBox(div.rail[i].x,div.rail[i].y,div.rail[i].w,div.rail[i].h,1);
   }
   for(let i=0;i<div.wall.length;i++){
-    push();
-      translate(0,0,3*tileSize*ZMAG);
-      fill(120);
-      push();
-        translate(
-          (div.wall[i].x-0.5+div.wall[i].w/2)*tileSize,
-          (div.wall[i].y-0.5+div.wall[i].h/2)*tileSize);
-        plane(
-          tileSize*div.wall[i].w,
-          tileSize*div.wall[i].h);
-      pop();
-    pop();
+    drawBox(div.wall[i].x,div.wall[i].y,div.wall[i].w,div.wall[i].h,5,color(60,65,70),color(50,55,60));
   }
 
   drawPlayer();
