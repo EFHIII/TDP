@@ -100,14 +100,11 @@ var spin=0;
 
 var inconsolata;
 
-function preload() {
-  inconsolata = loadFont('Inconsolata.otf');
-}
-
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   smooth();
 
+  inconsolata = loadFont('Inconsolata.otf');
   textFont(inconsolata);
 }
 
