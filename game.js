@@ -99,7 +99,7 @@ var spinning=false;
 var spin=0;
 
 function preload() {
-  inconsolata = loadFont('inconsolata.otf');
+  inconsolata = loadFont('Inconsolata.otf');
 }
 
 function setup() {
