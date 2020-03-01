@@ -631,6 +631,9 @@ function drawPlayer(){
   }
   else{
     spin=0;
+    blinking=0;
+    blinkTimer=false;
+    blinked=false;
   }
 
   while(trail.length<128){
@@ -685,7 +688,7 @@ function drawPlayer(){
           (random()-0.5+tx)*(random()-0.5+tx)*tileSize,
           (random()-0.5+ty)*(random()-0.5+ty)*tileSize,
           (random()-0.5+tz)*(random()-0.5+tz)*tileSize);
-        ellipse(0,0,tileSize*player.d/3,tileSize*player.d/3);
+        ellipse(0,0,tileSize*player.d*0.6*i/128,tileSize*player.d*0.6*i/128);
         pop();
       }
     pop();
