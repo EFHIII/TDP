@@ -85,11 +85,16 @@ const player={
   a:0.01,//acceleration
   az:0.1,//acceleration Z
   g:0.003,//gravity
-  ms:30,//max spin
-  sb:0.6,//spin boost
+  ms:100,//max spin
+  sb:0.3,//spin boost
   rest:3,//resting 'speed'
   mx:1,//max acceleration
+  blink:30,//blink duration
+  blinkV:0.3,
+  blinkCooldown:300,
 };
+
+let targetFPS=60;
 
 let onLevel=0;
 
@@ -98,10 +103,17 @@ let jump=false;
 let doubleJump=false;
 let spinning=false;
 let spin=0;
+let blinking=0;
+let blinkTimer=false;
+let blinked=false;
 
-let f;
+let finish=false;
 
 let startingHeight;
+let f;
+let mouseIn=false;
+
+let can;
 
 function preload() {
   f = loadFont(
@@ -109,12 +121,20 @@ function preload() {
   );
 }
 function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
+  can=createCanvas(windowWidth, windowHeight, WEBGL);
   smooth();
 
   textFont(f);
   startingHeight=height;
 }
+
+function mOver(){
+  mouseIn=true;
+}
+function mOut(){
+  mouseIn=false;
+}
+
 
 function maxHist(R, C, row) {
     let result = [];
@@ -234,9 +254,15 @@ function setupLevel(lvl){
   player.vy=0;
 
   trail=[];
+
   jump=false;
+  doubleJump=false;
   spinning=false;
   spin=0;
+  blinking=0;
+  blinkTimer=false;
+  blinked=false;
+
   currentMap=gameMaps[lvl];
   for(let i=0;i<currentMap.grid.length;i++){
     for(let j=0;j<currentMap.grid[i].length;j++){
@@ -270,7 +296,7 @@ const dirAr=[[0,1],[-1,0],[0,-1],[1,0]];
 function drawBox(x,y,w,h,z,ca,cb){
   fill(ca?ca:90+z*10);
   push();
-    translate((x+w/2-0.5)*tileSize,(y+h/2-0.5)*tileSize,(z-1)*tileSize);
+    translate((x+w/2-0.5)*tileSize,(y+h/2-0.5)*tileSize,(z-1)*tileSize*ZMAG);
     plane(w*tileSize,h*tileSize);
     fill(cb?cb:40);
   for(let k=0;k<4;k++){
@@ -371,7 +397,7 @@ function playerCollision(i,j){
         {x:i+0.5001,y:j-0.5},
         {x:i+0.5,y:j+0.5},
         {x:i-0.5,y:j+0.5},
-      ],4,player.x,player.y,player.z,player.d/2);
+      ],5,player.x,player.y,player.z,player.d/2);
     break;
     case('['):
     case('.'):
@@ -420,7 +446,7 @@ function getGround(x,y){
     case('#'):
       return 1;
     case('w'):
-      return 4;
+      return 5;
     case('['):
       return y-Y>x-X?1:0;
     case(']'):
@@ -437,6 +463,9 @@ function getGround(x,y){
       return y-Y>x-X?1:-100;
     case(','):
       return Y-y>x-X?-100:1;
+    case('G'):
+      finish=true;
+      return 0;
     default:
       return 0;
   }
@@ -448,7 +477,7 @@ function stepPlayer(){
   }
   let ground=getGround(player.x,player.y);
   for(let i=0;i<PI*2;i+=PI/4){
-    let temp=getGround(player.x+cos(i)*(player.d-0.001)/2,player.y+sin(i)*(player.d-0.001)/2);
+    let temp=getGround(player.x+cos(i)*(player.d-0.001)/2,player.y+sin(i)*(player.d-0.001)/2,1);
     if(temp>ground&&temp<=player.z){
       ground=temp;
     }
@@ -463,32 +492,41 @@ function stepPlayer(){
     spinning=true;
   }
   trail.push([player.x,player.y,player.z]);
+
+
+  let v = (!!keys[controls.left]^!!keys[controls.right])+(!!keys[controls.up]^!!keys[controls.down])>1?0.7071067811865476:1;
+
   if(keys[controls.up]){
-    player.vy-=player.a*(player.mx/(player.rest+abs(player.vy)));
+    player.vy-=v*player.a*(player.mx/(player.rest+abs(player.vy)));
     if(!spinning&&spin){
-      player.vy-=player.a*spin*player.sb;
+      player.vy-=v*player.a*spin*player.sb;
     }
   }
   if(keys[controls.down]){
-    player.vy+=player.a*(player.mx/(player.rest+abs(player.vy)));
+    player.vy+=v*player.a*(player.mx/(player.rest+abs(player.vy)));
     if(!spinning&&spin){
-      player.vy+=player.a*spin*player.sb;
+      player.vy+=v*player.a*spin*player.sb;
     }
   }
   if(keys[controls.left]){
-    player.vx-=player.a*(player.mx/(player.rest+abs(player.vx)));
+    player.vx-=v*player.a*(player.mx/(player.rest+abs(player.vx)));
     if(!spinning&&spin){
-      player.vx-=player.a*spin*player.sb;
+      player.vx-=v*player.a*spin*player.sb;
     }
   }
   if(keys[controls.right]){
-    player.vx+=player.a*(player.mx/(player.rest+abs(player.vx)));
+    player.vx+=v*player.a*(player.mx/(player.rest+abs(player.vx)));
     if(!spinning&&spin){
-      player.vx+=player.a*spin*player.sb;
+      player.vx+=v*player.a*spin*player.sb;
     }
   }
   if(player.z===ground&&!jump&&keys[controls.jump]){
     jump=true;
+    player.vz+=player.az;
+  }
+  else if(player.z>ground&&!doubleJump&&!jump&&keys[controls.jump]){
+    doubleJump=true;
+    player.vz*=-0.25;
     player.vz+=player.az;
   }
   else if(!jump&&keys[controls.jump]){
@@ -511,14 +549,47 @@ function stepPlayer(){
   if(player.z===ground){
     player.vx*=player.ar;
     player.vy*=player.ar;
+    doubleJump=false;
   }
   else{
     player.vx*=player.r;
     player.vy*=player.r;
   }
 
-  player.x+=player.vx;
-  player.y+=player.vy;
+  if(blinking<0){blinking++;}
+
+  if(!keys[controls.blink]){
+    blinked=false;
+  }
+
+  if(!blinked && blinking === 0 && keys[controls.blink]){
+    blinking = player.blink;
+    blinked=true;
+  }
+
+  if(blinking>0){
+    blinking--;
+    if(blinking === 0){
+      blinking=-player.blinkCooldown;
+    }
+
+    if(keys[controls.up]){
+      player.y-=player.blinkV*v;
+    }
+    if(keys[controls.down]){
+      player.y+=player.blinkV*v;
+    }
+    if(keys[controls.left]){
+      player.x-=player.blinkV*v;
+    }
+    if(keys[controls.right]){
+      player.x+=player.blinkV*v;
+    }
+  }
+  else{
+    player.x+=player.vx;
+    player.y+=player.vy;
+  }
 
   let x=(player.x>>0);
   let y=(player.y>>0);
@@ -539,10 +610,10 @@ function stepPlayer(){
         player.vx=cos(theta)*m;
         player.vy=sin(theta)*m;
         if(spinning){
+          player.vx*=1+0.01*spin;
+          player.vy*=1+0.01*spin;
           spinning=false;
           spin=0;
-          player.vx*=1+0.03*spin;
-          player.vy*=1+0.03*spin;
         }
       }
     }
@@ -550,44 +621,110 @@ function stepPlayer(){
 
 }
 function drawPlayer(){
-  stepPlayer();
-  stepPlayer();
+  if(!finish){
+    if(targetFPS<50){
+      stepPlayer();
+      stepPlayer();
+    }
+    stepPlayer();
+    stepPlayer();
+  }
+  else{
+    spin=0;
+  }
 
-  while(trail.length>256){
+  while(trail.length<128){
+    trail.push([player.x,player.y,player.z]);
+  }
+  while(trail.length>128){
     trail.shift();
   }
 
-  fill(30,130,200);
+  fill(30+spin*2,130-spin,200-spin*1.5);
   push();
     translate(player.x*tileSize,player.y*tileSize,tileSize*ZMAG*(player.z-0.99));
-    ellipse(0,0,tileSize*player.d,tileSize*player.d);
-  pop();
+    rotateZ(-theta*(-atan2(player.vy,player.vx)+HALF_PI));
+    rotateX(-theta*QUARTER_PI);
+    //ellipse(0,0,tileSize*player.d,tileSize*player.d);
+    sphere(tileSize*player.d/2);
 
-  /*
+    if(blinking<0&&(blinkTimer||(!blinked&&keys[controls.blink]))){
+      blinked=true;
+      blinkTimer=true;
+      translate(0,-tileSize*player.d,tileSize*ZMAG*(6-player.z));
+      ortho();
+      fill(200);
+      arc(0,0,
+        player.d*0.6*tileSize,
+        player.d*0.6*tileSize,
+        -HALF_PI,
+        -TWO_PI*(player.blinkCooldown-blinking-1)/player.blinkCooldown-HALF_PI,PIE,30);
+      let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
+      perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
+    }
+    else{
+      blinkTimer=false;
+    }
+  pop();
+  //*
   for(var i=trail.length-1;i>=0;i--){
+    randomSeed((trail[i][0]+trail[i][1]+trail[i][2])*100>>0);
+    let tx=sin((i/2+random()*3)/10)/4;
+    let ty=sin((i/2+random()*3)/10)/4;
+    let tz=sin((i/2+random()*3)/10)/4;
     let a=i/256;
     let b=(1-a)*(90+(trail[i][2])*10);
-    fill(80,180,250,i);
+    fill(80,180,250);
     push();
       translate(trail[i][0]*tileSize,trail[i][1]*tileSize,tileSize*ZMAG*(trail[i][2]-0.99)-0.1);
-      ellipse(0,0,tileSize*player.d/3,tileSize*player.d/3);
+      rotateZ(-theta*(-atan2(player.vy,player.vx)+HALF_PI));
+      rotateX(-theta*QUARTER_PI);
+      for(var j=0;j<2;j++){
+        push();
+        translate(
+          (random()-0.5+tx)*(random()-0.5+tx)*tileSize,
+          (random()-0.5+ty)*(random()-0.5+ty)*tileSize,
+          (random()-0.5+tz)*(random()-0.5+tz)*tileSize);
+        ellipse(0,0,tileSize*player.d/3,tileSize*player.d/3);
+        pop();
+      }
     pop();
   }
-  */
+  //*/
 }
 
 let fps=[];
+let minFPS=1000;
+let theta=0;
 function drawMap(){
   tileSize=min(width/16,height/16);
 
+  if(finish){
+    camera.z+=(player.z-camera.z-3)*0.1;
+    theta+=(1-theta)*0.1;
+    //theta+=sin(millis()/1000)/30;
+  }
+  else{
+    camera.z*=0.95;
+  }
+
   camera.x+=(player.x-camera.x)*0.3;
   camera.y+=(player.y-camera.y)*0.3;
-  camera.z+=Math.sqrt((player.vx*player.vx+player.vy*player.vy)*10)*0.02*tileSize;
-  camera.z*=0.95;
+  camera.z+=Math.sqrt((player.vx*player.vx+player.vy*player.vy)*10)*0.005*tileSize;
 
   push();
     scale(startingHeight/height);
-    translate(-camera.x*tileSize,-camera.y*tileSize,-(camera.z-3)*tileSize);
+
+    translate(-camera.x*tileSize,-camera.y*tileSize);
+    if(finish){
+      translate(0,0,(height/3-player.z*tileSize*ZMAG*0.8)*theta);
+      translate(camera.x*tileSize,camera.y*tileSize,(player.z-1)*tileSize*ZMAG);
+      rotateX(theta*QUARTER_PI);
+      rotateZ(theta*(-atan2(player.vy,player.vx)+HALF_PI));
+      translate(-camera.x*tileSize,-camera.y*tileSize,-(player.z-1)*tileSize*ZMAG);
+    }
+    translate(0,0,-(camera.z-2)*tileSize*ZMAG*(1-theta));
+
     noStroke();
 
   for(let i=0;i<currentMap.grid.length;i++){
@@ -672,11 +809,14 @@ function drawMap(){
 
   ortho();
   push();
-  translate(0,0,150);
+  translate(0,0,200*ZMAG);
   textSize(30);
   textAlign(LEFT,TOP);
 
-  fps.push(frameRate());
+  if(mouseIn){
+    fps.push(frameRate());
+  }
+
   if(fps.length>30){
     fps.shift();
   }
@@ -686,7 +826,16 @@ function drawMap(){
     c+=fps[i];
   }
   c/=fps.length;
-  text((c>>0)+" FPS",-width/2,-height/2);
+
+  if(fps.length>=30&&mouseIn&&c>0&&c<minFPS){
+    minFPS=(c*100>>0)/100;
+    if(minFPS<40){
+      targetFPS=30;
+      frameRate(30);
+    }
+  }
+
+  text((c>>0)+" FPS\nMIN "+minFPS,-width/2,-height/2);
   pop();
 
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
@@ -694,6 +843,11 @@ function drawMap(){
 }
 
 function draw() {
+  if(can){
+    document.getElementById('defaultCanvas0').addEventListener('mouseover',mOver);
+    document.getElementById('defaultCanvas0').addEventListener('mouseout',mOut);
+    can=null;
+  }
   background(0);
   drawMap();
 }
