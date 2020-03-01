@@ -105,6 +105,8 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   smooth();
+
+  textFont(inconsolata);
 }
 
 function maxHist(R, C, row) {
