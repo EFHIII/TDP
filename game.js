@@ -57,7 +57,7 @@ const div={
   goal:[],
 };
 
-var keys=[];
+let keys=[];
 const controls={
   up:38,
   down:40,
@@ -91,15 +91,17 @@ const player={
   mx:1,//max acceleration
 };
 
-var onLevel=0;
+let onLevel=0;
 
-var trail=[];
-var jump=false;
-var doubleJump=false;
-var spinning=false;
-var spin=0;
+let trail=[];
+let jump=false;
+let doubleJump=false;
+let spinning=false;
+let spin=0;
 
-var f;
+let f;
+
+let startingHeight;
 
 function preload() {
   f = loadFont(
@@ -111,6 +113,7 @@ function setup() {
   smooth();
 
   textFont(f);
+  startingHeight=height;
 }
 
 function maxHist(R, C, row) {
@@ -309,29 +312,28 @@ function pointLineDist(x0,y0,x1,y1,x2,y2,r){
     let y=(a*(-b*x0+a*y0)-b*c)/(a*a+b*b);
 
     let d=Math.sqrt(sq(x-x0)+sq(y-y0));
-
     if(d<r){
-        if(x1<x2){
-            if(x1<x&&x<x2){
-                return {x:x,y:y,dist:d};
-            }
+      if(x1<x2){
+        if(x1<x&&x<x2){
+          return {x:x,y:y,dist:d};
         }
-        else if(x1>x&&x>x2){
-            return {x:x,y:y,dist:d};
-        }
-        let da=Math.sqrt(sq(x0-x1)+sq(y0-y1));
-        let db=Math.sqrt(sq(x0-x2)+sq(y0-y2));
-        if(da<db&&da<r*r){
-            return {x:x1,y:y1,dist:da};
-        }
-        if(db<r*r){
-            return {x:x2,y:y2,dist:db};
-        }
+      }
+      else if(x1>x&&x>x2){
+        return {x:x,y:y,dist:d};
+      }
+      let da=Math.sqrt(sq(x0-x1)+sq(y0-y1));
+      let db=Math.sqrt(sq(x0-x2)+sq(y0-y2));
+      if(da<db&&da<r){
+        return {x:x1,y:y1,dist:da};
+      }
+      if(db<r){
+        return {x:x2,y:y2,dist:db};
+      }
     }
 };
 function shapeIntersect(points,sz,x,y,z,r){
   if(z>=sz){return;}
-  let closest=r*2;
+  let closest=r;
   let closestP={x:0,y:0};
   for(let i=1;i<points.length;i++){
     let cl=pointLineDist(x,y,points[i-1].x,points[i-1].y,points[i].x,points[i].y,r);
@@ -342,8 +344,8 @@ function shapeIntersect(points,sz,x,y,z,r){
   }
   let cl=pointLineDist(x,y,points[0].x,points[0].y,points[points.length-1].x,points[points.length-1].y,r);
   if(cl&&cl.dist<closest){
-      closest=cl.dist;
-      closestP={x:cl.x,y:cl.y};
+    closest=cl.dist;
+    closestP={x:cl.x,y:cl.y};
   }
   if(closest<r){
     return closestP;
@@ -371,6 +373,38 @@ function playerCollision(i,j){
         {x:i-0.5,y:j+0.5},
       ],4,player.x,player.y,player.z,player.d/2);
     break;
+    case('['):
+    case('.'):
+      return shapeIntersect([
+        {x:i-0.5001,y:j-0.5},
+        {x:i+0.5,y:j+0.5},
+        {x:i-0.5,y:j+0.5},
+      ],1,player.x,player.y,player.z,player.d/2);
+    break;
+    case(']'):
+    case(','):
+      return shapeIntersect([
+        {x:i+0.5001,y:j-0.5},
+        {x:i+0.5,y:j+0.5},
+        {x:i-0.5,y:j+0.5},
+      ],1,player.x,player.y,player.z,player.d/2);
+    break;
+    case('}'):
+    case('l'):
+      return shapeIntersect([
+        {x:i-0.5001,y:j-0.5},
+        {x:i+0.5001,y:j-0.5},
+        {x:i+0.5,y:j+0.5},
+      ],1,player.x,player.y,player.z,player.d/2);
+    break;
+    case('{'):
+    case('r'):
+      return shapeIntersect([
+        {x:i-0.5001,y:j-0.5},
+        {x:i+0.5001,y:j-0.5},
+        {x:i-0.5,y:j+0.5},
+      ],1,player.x,player.y,player.z,player.d/2);
+    break;
   }
 }
 
@@ -387,6 +421,22 @@ function getGround(x,y){
       return 1;
     case('w'):
       return 4;
+    case('['):
+      return y-Y>x-X?1:0;
+    case(']'):
+      return Y-y>x-X?0:1;
+    case('l'):
+      return y-Y>x-X?1:-100;
+    case('r'):
+      return Y-y>x-X?-100:1;
+    case('}'):
+      return y-Y>x-X?0:1;
+    case('{'):
+      return Y-y>x-X?1:0;
+    case('.'):
+      return y-Y>x-X?1:-100;
+    case(','):
+      return Y-y>x-X?-100:1;
     default:
       return 0;
   }
@@ -472,8 +522,8 @@ function stepPlayer(){
 
   let x=(player.x>>0);
   let y=(player.y>>0);
-  for(let i=-1;i<2;i++){
-    for(let j=-1;j<2;j++){
+  for(let i=-1;i<4;i++){
+    for(let j=-1;j<4;j++){
       let collision=playerCollision(x+j,y+i);
       if(collision){
         let v={x:player.x-collision.x,y:player.y-collision.y};
@@ -500,7 +550,6 @@ function stepPlayer(){
 
 }
 function drawPlayer(){
-  stepPlayer();
   stepPlayer();
   stepPlayer();
 
@@ -537,8 +586,7 @@ function drawMap(){
   camera.z*=0.95;
 
   push();
-
-  scale(600/height);
+    scale(startingHeight/height);
     translate(-camera.x*tileSize,-camera.y*tileSize,-(camera.z-3)*tileSize);
     noStroke();
 
