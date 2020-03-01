@@ -1,4 +1,5 @@
 const ZMAG=2;
+var currentMap;
 const gameMaps=[
   {
     title:"Test map",
@@ -49,11 +50,14 @@ const gameMaps=[
       "    wwwwwwwwwwwww"]
   }
 ];
+const div={
+  floor:[],
+  rail:[],
+  wall:[],
+  goal:[],
+};
 
 var keys=[];
-
-var currentMap;
-
 const controls={
   up:38,
   down:40,
@@ -63,12 +67,10 @@ const controls={
   spin:90,
   blink:88,
 };
-
 const camera={
   x:0,
   y:0
 };
-
 const player={
   x:0,
   y:0,
@@ -92,8 +94,131 @@ var onLevel=0;
 
 var trail=[];
 var jump=false;
+var doubleJump=false;
 var spinning=false;
 var spin=0;
+
+function preload() {
+  inconsolata = loadFont('inconsolata.otf');
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  smooth();
+}
+
+function maxHist(R, C, row) {
+    let result = [];
+
+    let top_val;
+    let max_area = 0;
+    let area = 0;
+    let i = 0;
+    let x=0;
+    let X=0;
+    while (i < C) {
+        if (result.length === 0 || row[result[result.length - 1]] <= row[i]) {
+            result.push(i++);
+        }
+        else {
+            X=result[result.length - 1];
+            top_val = row[X];
+            result.pop();
+            area = top_val * i;
+
+            if (result.length > 0) {
+                area = top_val * (i - result[result.length - 1] - 1);
+            }
+            if(area>max_area){
+                x=X;
+                max_area=area;
+            }
+
+        }
+    }
+
+    while (result.length > 0) {
+        X=result[result.length - 1];
+        top_val = row[X];
+        result.pop();
+        area = top_val * i;
+
+        if (result.length > 0) {
+            area = top_val * (i - result[result.length - 1] - 1);
+        }
+
+        if(area>max_area){
+            x=X;
+            max_area=area;
+        }
+    }
+
+    return [x,max_area];
+}
+function maxRectangle(A) {
+    let C=A[0].length;
+    let R=A.length;
+
+    let maxR=maxHist(R, C, A[0]);
+    let result = maxR[1];
+    let x=maxR[0],y=0,w=0,h=1;
+
+    for (let i = 1; i < R; i++) {
+        for (let j = 0; j < C; j++) {
+            if (A[i][j] === 1) {
+                A[i][j] += A[i - 1][j];
+            }
+        }
+        maxR=maxHist(R, C, A[i]);
+        if(maxR[1]>result){
+            result=maxR[1];
+            x=maxR[0];
+            y=i-A[i][x]+1;
+            h=A[i][x];
+            w=result/h;
+        }
+    }
+
+    return {x:x,y:y,w:w,h:h};
+}
+function rectDivision(chars){
+  let rects=[];
+  let a=1;
+  while(a>0){
+    let tgrid=[];
+    for(let i=0;i<currentMap.grid.length;i++){
+        tgrid.push([]);
+        for(let j=0;j<currentMap.grid[i].length;j++){
+            tgrid[i].push(
+                chars.indexOf(currentMap.grid[i][j])>=0?1:0);
+        }
+    }
+    for(let i=0;i<rects.length;i++){
+        for(let x=rects[i].w-1;x>=0;x--){
+            for(let y=rects[i].h-1;y>=0;y--){
+                tgrid[rects[i].y+y][rects[i].x+x]=i+2;
+            }
+        }
+    }
+
+    for(var i=0;i<rects.length;i++){
+        for(var x=rects[i].w-1;x>=0;x--){
+            for(var y=rects[i].h-1;y>=0;y--){
+                tgrid[rects[i].y+y][rects[i].x+x]=0;
+            }
+        }
+    }
+
+    rects.push(maxRectangle(tgrid));
+    a=rects[rects.length-1].w;
+
+    if(a===0){
+        rects.pop();
+    }
+  }
+  return rects;
+}
+
 function setupLevel(lvl){
   onLevel=lvl;
   player.vx=0;
@@ -117,16 +242,14 @@ function setupLevel(lvl){
   }
   camera.x=player.x;
   camera.y=player.y;
-}
 
+  div.floor=rectDivision('+S[]{}');
+  div.rail=rectDivision('#');
+  div.wall=rectDivision('w');
+  div.goal=rectDivision('G');
+}
 setupLevel(0);
 
-function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
-  smooth();
-  pg = createGraphics(400, 100);
-  pg.textSize(120);
-}
 var tileSize=0;
 function drawTile(x,y,s){
   push();
@@ -134,13 +257,17 @@ function drawTile(x,y,s){
   plane(s?s:tileSize);
   pop();
 }
-function drawBox(x,y,h){
-  fill(90+h*10);
+const dirAr=[[0,1],[-1,0],[0,-1],[1,0]];
+function drawBox(x,y,h,ca,cb){
+  fill(ca?ca:90+h*10);
   push();
     translate(x*tileSize,y*tileSize,(h-1)*tileSize);
     plane(tileSize);
-    fill(40);
+    fill(cb?cb:40);
   for(let k=0;k<4;k++){
+    if(getGround(x+dirAr[k][0],y+dirAr[k][1])>=h){
+      continue;
+    }
     push();
       rotateZ(PI/2*k);
       translate(0,tileSize/2,-tileSize/2*h*ZMAG);
@@ -342,8 +469,8 @@ function stepPlayer(){
 
   let x=(player.x>>0);
   let y=(player.y>>0);
-  for(let i=-3;i<4;i++){
-    for(let j=-3;j<4;j++){
+  for(let i=-1;i<2;i++){
+    for(let j=-1;j<2;j++){
       let collision=playerCollision(x+j,y+i);
       if(collision){
         let v={x:player.x-collision.x,y:player.y-collision.y};
@@ -358,6 +485,12 @@ function stepPlayer(){
         let m=Math.sqrt(player.vx*player.vx+player.vy*player.vy);
         player.vx=cos(theta)*m;
         player.vy=sin(theta)*m;
+        if(spinning){
+          spinning=false;
+          spin=0;
+          player.vx*=1+0.03*spin;
+          player.vy*=1+0.03*spin;
+        }
       }
     }
   }
@@ -422,84 +555,115 @@ function drawMap(){
           triangleBox(j,i,1,5);
         break;
         case("}"):
-          push();
-            translate(0,0,-tileSize*ZMAG);
-            fill(90);
-            drawTile(j*tileSize,i*tileSize);
-          pop();
-
           fill(40);
           triangleBox(j,i,1,1);
         break;
         case("{"):
-          push();
-            translate(0,0,-tileSize*ZMAG);
-            fill(90);
-            drawTile(j*tileSize,i*tileSize);
-          pop();
-
           fill(40);
           triangleBox(j,i,1,3);
         break;
         case("]"):
-          push();
-            translate(0,0,-tileSize*ZMAG);
-            fill(90);
-            drawTile(j*tileSize,i*tileSize);
-          pop();
-
           fill(40);
           triangleBox(j,i,1,7);
         break;
         case("["):
-          push();
-            translate(0,0,-tileSize*ZMAG);
-            fill(90);
-            drawTile(j*tileSize,i*tileSize);
-          pop();
-
           fill(40);
           triangleBox(j,i,1,5);
         break;
         case("#"):
-          drawBox(j,i,1);
+          //drawBox(j,i,1);
         break;
         case("w"):
-          fill(60,65,70);
-          push();
-            translate(j*tileSize,i*tileSize,(4-1)*tileSize);
-            plane(tileSize);
-            fill(50,55,60);
-          for(let k=0;k<4;k++){
-            push();
-              rotateZ(PI/2*k);
-              translate(0,tileSize/2,-tileSize/2*4*ZMAG);
-              rotateX(PI/2);
-              plane(tileSize,tileSize*4*ZMAG);
-            pop();
-          }
-          pop();
+          //drawBox(j,i,4,color(60,65,70),color(50,55,60));
         break;
         case("S"):
         case("+"):
+        /*
           push();
             translate(0,0,-tileSize*ZMAG);
             fill(90);
             drawTile(j*tileSize,i*tileSize);
           pop();
+          */
         break;
         case("G"):
+        /*
           push();
             fill(50,150,50);
             translate(0,0,-tileSize*ZMAG);
             drawTile(j*tileSize,i*tileSize);
           pop();
+          */
         break;
       }
     }
   }
 
+  for(let i=0;i<div.floor.length;i++){
+    push();
+      translate(0,0,-tileSize*ZMAG);
+      fill(90);
+      push();
+        translate(
+          (div.floor[i].x-0.5+div.floor[i].w/2)*tileSize,
+          (div.floor[i].y-0.5+div.floor[i].h/2)*tileSize);
+        plane(
+          tileSize*div.floor[i].w,
+          tileSize*div.floor[i].h);
+      pop();
+    pop();
+  }
+  for(let i=0;i<div.goal.length;i++){
+    push();
+      translate(0,0,-tileSize*ZMAG);
+      fill(50,150,50);
+      push();
+        translate(
+          (div.goal[i].x-0.5+div.goal[i].w/2)*tileSize,
+          (div.goal[i].y-0.5+div.goal[i].h/2)*tileSize);
+        plane(
+          tileSize*div.goal[i].w,
+          tileSize*div.goal[i].h);
+      pop();
+    pop();
+  }
+  for(let i=0;i<div.rail.length;i++){
+    push();
+      //translate(0,0,-tileSize*ZMAG);
+      fill(100);
+      push();
+        translate(
+          (div.rail[i].x-0.5+div.rail[i].w/2)*tileSize,
+          (div.rail[i].y-0.5+div.rail[i].h/2)*tileSize);
+        plane(
+          tileSize*div.rail[i].w,
+          tileSize*div.rail[i].h);
+      pop();
+    pop();
+  }
+  for(let i=0;i<div.wall.length;i++){
+    push();
+      translate(0,0,3*tileSize*ZMAG);
+      fill(120);
+      push();
+        translate(
+          (div.wall[i].x-0.5+div.wall[i].w/2)*tileSize,
+          (div.wall[i].y-0.5+div.wall[i].h/2)*tileSize);
+        plane(
+          tileSize*div.wall[i].w,
+          tileSize*div.wall[i].h);
+      pop();
+    pop();
+  }
+
   drawPlayer();
+
+  fill(250);
+  //textAlign(LEFT,TOP);
+
+  textFont("Arial");
+  text("Test",50,50);
+  //text((frameRate()*100>>0)/100,50,50);
 }
 
 function draw() {
