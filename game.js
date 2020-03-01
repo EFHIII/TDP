@@ -69,7 +69,8 @@ const controls={
 };
 const camera={
   x:0,
-  y:0
+  y:0,
+  z:0,
 };
 const player={
   x:0,
@@ -98,13 +99,18 @@ var doubleJump=false;
 var spinning=false;
 var spin=0;
 
-var inconsolata;
+var f;
 
+function preload() {
+  f = loadFont(
+    "https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf"
+  );
+}
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   smooth();
 
-  inconsolata = loadFont('Inconsolata.otf');
+  textFont(f);
 }
 
 function maxHist(R, C, row) {
@@ -525,14 +531,19 @@ function drawPlayer(){
   pop();
 }
 
+let fps=[];
 function drawMap(){
   tileSize=min(width/16,height/16);
 
   camera.x+=(player.x-camera.x)*0.3;
   camera.y+=(player.y-camera.y)*0.3;
+  camera.z+=Math.sqrt((player.vx*player.vx+player.vy*player.vy)*10)*0.02*tileSize;
+  camera.z*=0.95;
 
   push();
-    translate(-camera.x*tileSize,-camera.y*tileSize);
+
+  scale(600/height);
+    translate(-camera.x*tileSize,-camera.y*tileSize,-(camera.z-3)*tileSize);
     noStroke();
 
   for(let i=0;i<currentMap.grid.length;i++){
@@ -659,11 +670,30 @@ function drawMap(){
   drawPlayer();
 
   fill(250);
-  //textAlign(LEFT,TOP);
 
-  textFont(inconsolata);
-  text("Test",50,50);
-  //text((frameRate()*100>>0)/100,50,50);
+  pop();
+
+  ortho();
+  push();
+  translate(0,0,150);
+  textSize(30);
+  textAlign(LEFT,TOP);
+
+  fps.push(frameRate());
+  if(fps.length>30){
+    fps.shift();
+  }
+
+  let c=0;
+  for(let i=0;i<fps.length;i++){
+    c+=fps[i];
+  }
+  c/=fps.length;
+  text((c>>0)+" FPS",-width/2,-height/2);
+  pop();
+
+  let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
+  perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
 function draw() {
