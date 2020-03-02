@@ -19,9 +19,9 @@ const gameMaps=[
       "     #+++++++++#w#++++++#           ",
       "     #+++++++++#w#++++++#           ",
       "     #+++++++++###++++++#wwwwwwwwwww",
-      "     #++++++++++++++++++#       }##w",
-      "     #++++++++++++++++++#        }#w",
-      "     #[+++++++]###++++++#wwww     }w",
+      "     #++++++++++++++++++#       l##w",
+      "     #++++++++++++++++++#        l#w",
+      "     #[+++++++]###++++++#wwww     lw",
       "     ##[+++++]####++++++#w         w",
       "    ww###+++###ww#++++++#w     ++++w",
       "    w##{+++++}##w#++++++#w     ++++w",
@@ -140,7 +140,8 @@ const player={
   blink:30,//blink duration
   blinkV:0.3,
   blinkCooldown:300,
-  trailLength:128
+  trailLength:128,
+  trailSpeed:0.04
 };
 
 let targetFPS=60;
@@ -172,10 +173,13 @@ function preload() {
 function setup() {
   can=createCanvas(windowWidth, windowHeight, WEBGL);
   smooth();
+  pg = createGraphics(200, 200);
+
+  frameRate(60);
 
   textFont(f);
   startingHeight=height;
-  performanceMode(true);
+  //performanceMode(true);
 }
 
 function mOver(){
@@ -316,22 +320,79 @@ function setupLevel(lvl){
 setupLevel(0);
 
 var tileSize=0;
-function drawTile(x,y,s){
-  push();
-  translate(x,y);
-  plane(s?s:tileSize);
-  pop();
-}
 const dirAr=[[0,1],[-1,0],[0,-1],[1,0]];
-function drawBox(x,y,w,h,z,ca,cb){
-  fill(ca?ca:90+z*10);
+function tileShadow(x,y,w,h,z,c,r){
+  if(z<player.z+player.d/2&&
+      player.x+0.5>x-player.d&&
+      player.x+0.5<x+player.d+w&&
+      player.y+(player.z+player.d-z)/4+0.5>y-player.d&&
+      player.y+(player.z+player.d-z)/4+0.5<y+player.d+h){
+    pg.resizeCanvas(w*tileSize, h*tileSize);
+
+    pg.background(c);
+
+    pg.noStroke();
+    pg.fill(0,100);
+    if(r!==undefined){
+      pg.translate(w*tileSize/2,h*tileSize/2);
+      pg.rotate(-r-HALF_PI);
+      pg.translate(-w*tileSize/2,-h*tileSize/2);
+    }
+    else if(r){
+      pg.translate(w*tileSize/2,h*tileSize/2);
+      pg.rotate(-r-HALF_PI);
+      pg.translate(-w*tileSize/2,-h*tileSize/2);
+    }
+    pg.ellipse(
+      (player.x+0.5-x)*tileSize,
+      (player.y+0.5-y+(player.z+player.d-z)/4)*tileSize,
+      player.d*tileSize,
+      player.d*tileSize);
+    if(0){
+      pg.stroke(0,255,0);
+      pg.noFill();
+      pg.rect(10,10,w*tileSize-20,h*tileSize-20);
+      pg.fill(255,255,0);
+      pg.noStroke();
+      pg.ellipse(w*tileSize/2,h*tileSize/2,10,10);
+      for(var i=0;i<2;i++){
+        for(var j=0;j<2;j++){
+          pg.ellipse(10+(w*tileSize-20)*i,10+(h*tileSize-20)*j,5,5);
+        }
+      }
+      pg.fill(255,0,0);
+      pg.ellipse(10,10,10,10);
+      pg.fill(0,0,255);
+      pg.ellipse(w*tileSize-10,10,10,10);
+      pg.fill(0,255,0);
+      pg.ellipse(10,h*tileSize-10,10,10);
+    }
+    texture(pg);
+  }
+  else{
+    fill(c);
+  }
+
+  translate((x+w/2-0.5)*tileSize,(y+h/2-0.5)*tileSize,(z-1)*tileSize*ZMAG);
+  if(r){rotateZ(r);}
+}
+function drawBox(x,y,w,h,z,r,g,b){
   push();
-    translate((x+w/2-0.5)*tileSize,(y+h/2-0.5)*tileSize,(z-1)*tileSize*ZMAG);
-    plane(w*tileSize,h*tileSize);
-    fill(cb?cb:40);
+
+  tileShadow(x,y,w,h,z,b?color(r,g,b):color(90+z*10));
+  plane(w*tileSize,h*tileSize);
+
   for(let k=0;k<4;k++){
-    fill(cb?cb:(k>1?1:2)*10+35);
+    if(b){
+      let sh=sin((k-1)*HALF_PI)*10-20;
+      fill(sh+r,sh+g,sh+b);
+    }
+    else{
+      fill(sin((k-1)*HALF_PI)*10+45);
+    }
+
     push();
+
       rotateZ(PI/2*k);
       translate(0,tileSize/2*(k%2?w:h),-tileSize/2*z*ZMAG);
       rotateX(PI/2);
@@ -342,6 +403,7 @@ function drawBox(x,y,w,h,z,ca,cb){
 }
 
 function triangleBox(x,y,z,r){
+  fill(sin((r+4)*QUARTER_PI)*10+45);
   push();
     translate(x*tileSize,y*tileSize,(-(z+1)/2+0.5)*tileSize*ZMAG);
     rotateZ(PI/4*r);
@@ -349,10 +411,8 @@ function triangleBox(x,y,z,r){
     plane(tileSize*1.4142135623730951,tileSize*z*ZMAG);
   pop();
 
-  fill(100);
   push();
-  translate(x*tileSize,y*tileSize,(z-1)*tileSize*ZMAG);
-  rotateZ(-PI/4*(r-3)*45);
+  tileShadow(x,y,1,1,z,color(90+z*10),-PI/4*(r-3)*45);
   triangle(
     0.5*tileSize,-0.5*tileSize,
     -0.5*tileSize,0.5*tileSize,
@@ -413,7 +473,16 @@ function playerCollision(i,j){
   if(i<0||j<0){return;}
   let t=currentMap.grid.length>j?(currentMap.grid[j].length>i?currentMap.grid[j][i]:false):false;
   if(t===false){return;}
+  let temp;
   switch(t){
+    case('+'):
+      return shapeIntersect([
+        {x:i-0.5001,y:j-0.5},
+        {x:i+0.5001,y:j-0.5},
+        {x:i+0.5,y:j+0.5},
+        {x:i-0.5,y:j+0.5},
+      ],0,player.x,player.y,player.z,player.d/2);
+    break;
     case('#'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
@@ -431,6 +500,13 @@ function playerCollision(i,j){
       ],5,player.x,player.y,player.z,player.d/2);
     break;
     case('['):
+      temp=shapeIntersect([
+        {x:i-0.5001,y:j-0.5},
+        {x:i+0.5001,y:j-0.5},
+        {x:i+0.5,y:j+0.5},
+        {x:i-0.5,y:j+0.5},
+      ],0,player.x,player.y,player.z,player.d/2);
+      if(temp){return temp;}
     case('.'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
@@ -439,6 +515,13 @@ function playerCollision(i,j){
       ],1,player.x,player.y,player.z,player.d/2);
     break;
     case(']'):
+      temp=shapeIntersect([
+        {x:i-0.5001,y:j-0.5},
+        {x:i+0.5001,y:j-0.5},
+        {x:i+0.5,y:j+0.5},
+        {x:i-0.5,y:j+0.5},
+      ],0,player.x,player.y,player.z,player.d/2);
+      if(temp){return temp;}
     case(','):
       return shapeIntersect([
         {x:i+0.5001,y:j-0.5},
@@ -447,6 +530,13 @@ function playerCollision(i,j){
       ],1,player.x,player.y,player.z,player.d/2);
     break;
     case('}'):
+      temp=shapeIntersect([
+        {x:i-0.5001,y:j-0.5},
+        {x:i+0.5001,y:j-0.5},
+        {x:i+0.5,y:j+0.5},
+        {x:i-0.5,y:j+0.5},
+      ],0,player.x,player.y,player.z,player.d/2);
+      if(temp){return temp;}
     case('l'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
@@ -455,6 +545,13 @@ function playerCollision(i,j){
       ],1,player.x,player.y,player.z,player.d/2);
     break;
     case('{'):
+      temp=shapeIntersect([
+        {x:i-0.5001,y:j-0.5},
+        {x:i+0.5001,y:j-0.5},
+        {x:i+0.5,y:j+0.5},
+        {x:i-0.5,y:j+0.5},
+      ],0,player.x,player.y,player.z,player.d/2);
+      if(temp){return temp;}
     case('r'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
@@ -522,7 +619,12 @@ function stepPlayer(){
   else if(player.z>ground&&keys[controls.spin]){
     spinning=true;
   }
-  trail.push([player.x,player.y,player.z]);
+  if(blinking>0||player.vx*player.vx+player.vy*player.vy>player.trailSpeed){
+    trail.push([player.x,player.y,player.z,Math.random()]);
+  }
+  else{
+    trail.push(null);
+  }
 
 
   let v = (!!keys[controls.left]^!!keys[controls.right])+(!!keys[controls.up]^!!keys[controls.down])>1?0.7071067811865476:1;
@@ -651,24 +753,26 @@ function stepPlayer(){
   }
 
 }
-function drawPlayer(){
-  if(!finish){
-    if(targetFPS<50){
+
+function run(){
+    if(!finish){
+      if(targetFPS<50){
+        stepPlayer();
+        stepPlayer();
+      }
       stepPlayer();
       stepPlayer();
     }
-    stepPlayer();
-    stepPlayer();
-  }
-  else{
-    spin=0;
-    blinking=0;
-    blinkTimer=false;
-    blinked=false;
-  }
-
+    else{
+      spin=0;
+      blinking=0;
+      blinkTimer=false;
+      blinked=false;
+    }
+}
+function drawPlayer(){
   while(trail.length<player.trailLength){
-    trail.push([player.x,player.y,player.z]);
+    trail.push(null);
   }
   while(trail.length>player.trailLength){
     trail.shift();
@@ -676,9 +780,9 @@ function drawPlayer(){
 
   fill(30+spin*2,130-spin,200-spin*1.5);
   push();
-    translate(player.x*tileSize,player.y*tileSize,tileSize*ZMAG*(player.z+player.d/2-0.99));
-    rotateZ(-theta*(-atan2(player.vy,player.vx)+HALF_PI));
-    rotateX(-theta*QUARTER_PI);
+    translate(player.x*tileSize,player.y*tileSize,tileSize*ZMAG*(player.z+player.d/4-0.99));
+    rotateZ(-finishTransition*(-atan2(player.vy,player.vx)+HALF_PI));
+    rotateX(-finishTransition*QUARTER_PI);
     //ellipse(0,0,tileSize*player.d,tileSize*player.d);
     sphere(tileSize*player.d/2);
 
@@ -702,52 +806,60 @@ function drawPlayer(){
   pop();
   //*
   for(var i=trail.length-1;i>=0;i--){
-    randomSeed((trail[i][0]+trail[i][1]+trail[i][2])*100>>0);
-    let tx=sin((i/2+random()*3)/10)/4;
-    let ty=sin((i/2+random()*3)/10)/4;
-    let tz=sin((i/2+random()*3)/10)/4;
-    let a=i/(player.trailLength*2);
-    let b=(1-a)*(90+(trail[i][2])*10);
-    fill(80,180,250);
-    push();
-      translate(trail[i][0]*tileSize,trail[i][1]*tileSize,tileSize*ZMAG*(trail[i][2]+player.d/2-0.99)-0.1);
-      rotateZ(-theta*(-atan2(player.vy,player.vx)+HALF_PI));
-      rotateX(-theta*QUARTER_PI);
-      for(var j=0;j<2;j++){
-        push();
-        translate(
-          (random()-0.5+tx)*(random()-0.5+tx)*tileSize,
-          (random()-0.5+ty)*(random()-0.5+ty)*tileSize,
-          (random()-0.5+tz)*(random()-0.5+tz)*tileSize);
-        ellipse(0,0,tileSize*player.d*0.6*i/player.trailLength,tileSize*player.d*0.6*i/player.trailLength);
-        pop();
-      }
-    pop();
+    if(trail[i]){
+      randomSeed(trail[i][3]*10000>>0);
+      let tx=sin((i/2+random()*3)/10)/4;
+      let ty=sin((i/2+random()*3)/10)/4;
+      let tz=sin((i/2+random()*3)/10)/4;
+      let a=i/(player.trailLength*2);
+      let b=(1-a)*(90+(trail[i][2])*10);
+      fill(80,180,250);
+      push();
+        translate(trail[i][0]*tileSize,trail[i][1]*tileSize,tileSize*ZMAG*(trail[i][2]+player.d/2-0.99)-0.1);
+        rotateZ(-finishTransition*(-atan2(player.vy,player.vx)+HALF_PI));
+        rotateX(-finishTransition*QUARTER_PI);
+        for(var j=0;j<2;j++){
+          push();
+          translate(
+            (random()-0.5+tx)*(random()-0.5+tx)*tileSize,
+            (random()-0.5+ty)*(random()-0.5+ty)*tileSize,
+            (random()-0.5+tz)*(random()-0.5+tz)*tileSize);
+          ellipse(0,0,tileSize*player.d*0.6*i/player.trailLength,tileSize*player.d*0.6*i/player.trailLength);
+          pop();
+        }
+      pop();
+    }
   }
   //*/
 }
 
+let fps=[];
+let minFPS=1000;
 function performanceMode(val){
   if(val){
     noSmooth();
     player.trailLength=0;
+    targetFPS=30;
+    frameRate(30);
   }
   else{
     smooth();
     player.trailLength=128;
+    targetFPS=60;
+    frameRate(60);
+    minFPS=1000;
+    fps=[];
   }
 }
 
-let fps=[];
-let minFPS=1000;
-let theta=0;
+let finishTransition=0;
 function drawMap(){
+  run();
   tileSize=min(width/16,height/16);
 
   if(finish){
     camera.z+=(player.z-camera.z-3)*0.1;
-    theta+=(1-theta)*0.1;
-    //theta+=sin(millis()/1000)/30;
+    finishTransition+=(1-finishTransition)*0.1;
   }
   else{
     camera.z*=0.95;
@@ -762,13 +874,13 @@ function drawMap(){
 
     translate(-camera.x*tileSize,-camera.y*tileSize);
     if(finish){
-      translate(0,0,(height/3-player.z*tileSize*ZMAG*0.8)*theta);
-      translate(camera.x*tileSize,camera.y*tileSize,(player.z-1)*tileSize*ZMAG);
-      rotateX(theta*QUARTER_PI);
-      rotateZ(theta*(-atan2(player.vy,player.vx)+HALF_PI));
+      translate(0,0,(-player.z*tileSize*ZMAG)*finishTransition);
+      translate(camera.x*tileSize,camera.y*tileSize,(player.z-2+4*finishTransition)*tileSize*ZMAG);
+      rotateX(finishTransition*QUARTER_PI);
+      rotateZ(finishTransition*(-atan2(player.vy,player.vx)+HALF_PI));
       translate(-camera.x*tileSize,-camera.y*tileSize,-(player.z-1)*tileSize*ZMAG);
     }
-    translate(0,0,-(camera.z-2)*tileSize*ZMAG*(1-theta));
+    translate(0,0,-(camera.z-2)*tileSize*ZMAG*(1-finishTransition));
 
     noStroke();
 
@@ -813,37 +925,21 @@ function drawMap(){
 
   for(let i=0;i<div.floor.length;i++){
     push();
-      translate(0,0,-tileSize*ZMAG);
-      fill(90);
-      push();
-        translate(
-          (div.floor[i].x-0.5+div.floor[i].w/2)*tileSize,
-          (div.floor[i].y-0.5+div.floor[i].h/2)*tileSize);
-        plane(
-          tileSize*div.floor[i].w,
-          tileSize*div.floor[i].h);
-      pop();
+    tileShadow(div.floor[i].x,div.floor[i].y,div.floor[i].w,div.floor[i].h,0,color(90));
+    plane(div.floor[i].w*tileSize,div.floor[i].h*tileSize);
     pop();
   }
   for(let i=0;i<div.goal.length;i++){
     push();
-      translate(0,0,-tileSize*ZMAG);
-      fill(80,250,80);
-      push();
-        translate(
-          (div.goal[i].x-0.5+div.goal[i].w/2)*tileSize,
-          (div.goal[i].y-0.5+div.goal[i].h/2)*tileSize);
-        plane(
-          tileSize*div.goal[i].w,
-          tileSize*div.goal[i].h);
-      pop();
+    tileShadow(div.goal[i].x,div.goal[i].y,div.goal[i].w,div.goal[i].h,0,color(80,250,80));
+    plane(div.goal[i].w*tileSize,div.goal[i].h*tileSize);
     pop();
   }
   for(let i=0;i<div.rail.length;i++){
     drawBox(div.rail[i].x,div.rail[i].y,div.rail[i].w,div.rail[i].h,1);
   }
   for(let i=0;i<div.wall.length;i++){
-    drawBox(div.wall[i].x,div.wall[i].y,div.wall[i].w,div.wall[i].h,5,color(60,65,70),color(50,55,60));
+    drawBox(div.wall[i].x,div.wall[i].y,div.wall[i].w,div.wall[i].h,5,60,65,70);
   }
 
   drawPlayer();
@@ -853,8 +949,8 @@ function drawMap(){
   pop();
 
   ortho();
-  push();
-  translate(0,0,200*ZMAG);
+  resetMatrix();
+
   textSize(30);
   textAlign(LEFT,TOP);
 
@@ -874,14 +970,10 @@ function drawMap(){
 
   if(fps.length>=30&&mouseIn&&c>0&&c<minFPS){
     minFPS=(c*100>>0)/100;
-    if(minFPS<40){
-      //targetFPS=30;
-      //frameRate(30);
-    }
   }
 
   text((c>>0)+" FPS\nMIN "+minFPS,-width/2,-height/2);
-  pop();
+
 
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
