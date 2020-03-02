@@ -2,6 +2,54 @@ const ZMAG=2;
 var currentMap;
 const gameMaps=[
   {
+    title:"broken map",
+    grid:[
+      "                                    ",
+      "     ,##################.           ",
+      "     ##{++++++++++++++}##           ",
+      "     #{++++++++++++++++}#           ",
+      "     #++++++++++++++++++#           ",
+      "     #++++++++++++++++++#           ",
+      "     #+++++++++###++++++#           ",
+      "     #+++++++++#w#++++++#           ",
+      "     #+++++++++#w#++++++#           ",
+      "     #+++++++++#w#++++++#           ",
+      "     #+++++++++#w#++++++#           ",
+      "     #+++++++++#w#++++++#           ",
+      "     #+++++++++#w#++++++#           ",
+      "     #+++++++++#w#++++++#           ",
+      "     #+++++++++###++++++#wwwwwwwwwww",
+      "     #++++++++++++++++++#       }##w",
+      "     #++++++++++++++++++#        }#w",
+      "     #[+++++++]###++++++#wwww     }w",
+      "     ##[+++++]####++++++#w         w",
+      "    ww###+++###ww#++++++#w     ++++w",
+      "    w##{+++++}##w#++++++#w     ++++w",
+      "    w#{+++++++}#w#++++++#w     ++++w",
+      "    w#+++++++++#w#++++++#w     ++++w",
+      "    w#+++++++++#w#++++++#w         w",
+      "    w#+++++++++#w#++++++#w         w",
+      "    w#+++++++++#w#++++++#w++++     w",
+      "    w#+++++++++#w#++++++#w++++     w",
+      "    w#+++++++++#w#++++++#w++++     w",
+      "    w#+++++++++#w#++++++#w++++     w",
+      "    w#+++++++++#w#++++++#w         w",
+      "    w#[+++++++]#w#++++++#w         w",
+      "    w##[+++++]##w#++++++#w     ++++w",
+      "    ww###+++###ww#++++++#w     ++++w",
+      "    w##{+++++}##w#++++++#w     ++++w",
+      "    w#{+++++++}#w#++++++#w     ++++w",
+      "    w#+++++++++#w#++++++###########w",
+      "    w#+++++++++#w#+++++++GGGGGG####w",
+      "    w#+++++++++#w#+++++++GGGGGG####w",
+      "    w#+++++++++#w#+++++++GGGGGG####w",
+      "    w#++++S++++#w#+++++++GGGGGG####w",
+      "    w#[+++++++]#w#+++++++GGGGGG####w",
+      "    w##[+++++]##w#[++++++GGGGGG####w",
+      "    wl#########rwl##############wwww",
+      "    wwwwwwwwwwwww"]
+  },
+  {
     title:"Test map",
     grid:[
       "                                    ",
@@ -92,6 +140,7 @@ const player={
   blink:30,//blink duration
   blinkV:0.3,
   blinkCooldown:300,
+  trailLength:128
 };
 
 let targetFPS=60;
@@ -126,6 +175,7 @@ function setup() {
 
   textFont(f);
   startingHeight=height;
+  performanceMode(true);
 }
 
 function mOver(){
@@ -135,62 +185,42 @@ function mOut(){
   mouseIn=false;
 }
 
-
-function maxHist(R, C, row) {
-    let result = [];
-
-    let top_val;
-    let max_area = 0;
-    let area = 0;
-    let i = 0;
+function maxFromRow(row) {
+    let maxR=0;
+    let count=0;
+    let cur=0;
     let x=0;
     let X=0;
-    while (i < C) {
-        if (result.length === 0 || row[result[result.length - 1]] <= row[i]) {
-            result.push(i++);
+    let w=0;
+    for(let i=0;i<row.length;i++){
+        if(row[i]===cur){
+            count+=cur;
         }
-        else {
-            X=result[result.length - 1];
-            top_val = row[X];
-            result.pop();
-            area = top_val * i;
-
-            if (result.length > 0) {
-                area = top_val * (i - result[result.length - 1] - 1);
-            }
-            if(area>max_area){
+        else{
+            if(count>maxR){
+                maxR=count;
                 x=X;
-                max_area=area;
+                w=maxR/cur;
             }
-
+            X=i;
+            cur=row[i];
+            count=cur;
         }
     }
-
-    while (result.length > 0) {
-        X=result[result.length - 1];
-        top_val = row[X];
-        result.pop();
-        area = top_val * i;
-
-        if (result.length > 0) {
-            area = top_val * (i - result[result.length - 1] - 1);
-        }
-
-        if(area>max_area){
-            x=X;
-            max_area=area;
-        }
+    if(count>maxR){
+        maxR=count;
+        x=X;
+        w=maxR/cur;
     }
-
-    return [x,max_area];
-}
+    return [x,w,maxR];
+};
 function maxRectangle(A) {
     let C=A[0].length;
     let R=A.length;
 
-    let maxR=maxHist(R, C, A[0]);
+    let maxR=maxFromRow(A[0]);
     let result = maxR[1];
-    let x=maxR[0],y=0,w=0,h=1;
+    let x=maxR[0],y=0,w=maxR[1],h=1;
 
     for (let i = 1; i < R; i++) {
         for (let j = 0; j < C; j++) {
@@ -198,18 +228,18 @@ function maxRectangle(A) {
                 A[i][j] += A[i - 1][j];
             }
         }
-        maxR=maxHist(R, C, A[i]);
-        if(maxR[1]>result){
-            result=maxR[1];
+        maxR=maxFromRow(A[i]);
+        if(maxR[2]>result){
+            result=maxR[2];
             x=maxR[0];
             y=i-A[i][x]+1;
             h=A[i][x];
-            w=result/h;
+            w=maxR[1];
         }
     }
 
     return {x:x,y:y,w:w,h:h};
-}
+};
 function rectDivision(chars){
   let rects=[];
   let a=1;
@@ -300,6 +330,7 @@ function drawBox(x,y,w,h,z,ca,cb){
     plane(w*tileSize,h*tileSize);
     fill(cb?cb:40);
   for(let k=0;k<4;k++){
+    fill(cb?cb:(k===3?1:k)*10+30);
     push();
       rotateZ(PI/2*k);
       translate(0,tileSize/2*(k%2?w:h),-tileSize/2*z*ZMAG);
@@ -636,16 +667,16 @@ function drawPlayer(){
     blinked=false;
   }
 
-  while(trail.length<128){
+  while(trail.length<player.trailLength){
     trail.push([player.x,player.y,player.z]);
   }
-  while(trail.length>128){
+  while(trail.length>player.trailLength){
     trail.shift();
   }
 
   fill(30+spin*2,130-spin,200-spin*1.5);
   push();
-    translate(player.x*tileSize,player.y*tileSize,tileSize*ZMAG*(player.z-0.99));
+    translate(player.x*tileSize,player.y*tileSize,tileSize*ZMAG*(player.z+player.d/2-0.99));
     rotateZ(-theta*(-atan2(player.vy,player.vx)+HALF_PI));
     rotateX(-theta*QUARTER_PI);
     //ellipse(0,0,tileSize*player.d,tileSize*player.d);
@@ -675,11 +706,11 @@ function drawPlayer(){
     let tx=sin((i/2+random()*3)/10)/4;
     let ty=sin((i/2+random()*3)/10)/4;
     let tz=sin((i/2+random()*3)/10)/4;
-    let a=i/256;
+    let a=i/(player.trailLength*2);
     let b=(1-a)*(90+(trail[i][2])*10);
     fill(80,180,250);
     push();
-      translate(trail[i][0]*tileSize,trail[i][1]*tileSize,tileSize*ZMAG*(trail[i][2]-0.99)-0.1);
+      translate(trail[i][0]*tileSize,trail[i][1]*tileSize,tileSize*ZMAG*(trail[i][2]+player.d/2-0.99)-0.1);
       rotateZ(-theta*(-atan2(player.vy,player.vx)+HALF_PI));
       rotateX(-theta*QUARTER_PI);
       for(var j=0;j<2;j++){
@@ -688,12 +719,23 @@ function drawPlayer(){
           (random()-0.5+tx)*(random()-0.5+tx)*tileSize,
           (random()-0.5+ty)*(random()-0.5+ty)*tileSize,
           (random()-0.5+tz)*(random()-0.5+tz)*tileSize);
-        ellipse(0,0,tileSize*player.d*0.6*i/128,tileSize*player.d*0.6*i/128);
+        ellipse(0,0,tileSize*player.d*0.6*i/player.trailLength,tileSize*player.d*0.6*i/player.trailLength);
         pop();
       }
     pop();
   }
   //*/
+}
+
+function performanceMode(val){
+  if(val){
+    noSmooth();
+    player.trailLength=0;
+  }
+  else{
+    smooth();
+    player.trailLength=128;
+  }
 }
 
 let fps=[];
@@ -786,7 +828,7 @@ function drawMap(){
   for(let i=0;i<div.goal.length;i++){
     push();
       translate(0,0,-tileSize*ZMAG);
-      fill(50,150,50);
+      fill(80,250,80);
       push();
         translate(
           (div.goal[i].x-0.5+div.goal[i].w/2)*tileSize,
