@@ -330,7 +330,7 @@ function drawBox(x,y,w,h,z,ca,cb){
     plane(w*tileSize,h*tileSize);
     fill(cb?cb:40);
   for(let k=0;k<4;k++){
-    fill(cb?cb:(k===3?1:k)*10+30);
+    fill(cb?cb:(k>1?1:2)*10+35);
     push();
       rotateZ(PI/2*k);
       translate(0,tileSize/2*(k%2?w:h),-tileSize/2*z*ZMAG);
@@ -875,8 +875,8 @@ function drawMap(){
   if(fps.length>=30&&mouseIn&&c>0&&c<minFPS){
     minFPS=(c*100>>0)/100;
     if(minFPS<40){
-      targetFPS=30;
-      frameRate(30);
+      //targetFPS=30;
+      //frameRate(30);
     }
   }
 
