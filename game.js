@@ -859,7 +859,7 @@ function drawMap(){
   textAlign(LEFT,TOP);
 
   if(mouseIn){
-    fps.push(frameRate(targetFPS));
+    fps.push(frameRate());
   }
 
   if(fps.length>30){
