@@ -3,8 +3,11 @@ To play, go to [here](https://efhiii.github.io/TDP)
 
 ## Controls
 `ARROW KEYS` - move
+
 `SPACE` - jump / double jump
+
 `Z` - (hold) charged boost (activates when hitting the ground/wall)
+
 `X` - brief boost (has a cooldown)
 
 # FAQ
