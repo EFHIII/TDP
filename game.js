@@ -22,7 +22,7 @@ const gameMaps=[
       "     #++++++++++++++++++#       l##w",
       "     #++++++++++++++++++#        l#w",
       "     #[+++++++]###++++++#wwww     lw",
-      "     ##[+++++]####++++++#w         w",
+      "    w##[+++++]##w#++++++#w         w",
       "    ww###+++###ww#++++++#w     ++++w",
       "    w##{+++++}##w#++++++#w     ++++w",
       "    w#{+++++++}#w#++++++#w     ++++w",
@@ -760,7 +760,9 @@ function run(){
         stepPlayer();
         stepPlayer();
       }
-      stepPlayer();
+      if(targetFPS<70){
+        stepPlayer();
+      }
       stepPlayer();
     }
     else{
