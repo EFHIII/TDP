@@ -12,6 +12,10 @@ To play, go [here](https://efhiii.github.io/TDP)
 
 `X` - brief boost (has a cooldown)
 
+`R` - restart level
+
+`ENTER` - continue to next level (after finishing a level)
+
 # FAQ
 ***It's really laggy, how do I fix this?***
 There are a few reasons why the game might be running slow, here's a list of the ones I know and how to fix them.

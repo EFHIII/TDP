@@ -144,6 +144,9 @@ const controls={
   jump:32,
   spin:90,
   blink:88,
+  restart:82,
+  nextLevel:13,
+  nextLevel2:10
 };
 const camera={
   x:0,
@@ -177,6 +180,9 @@ const player={
 let targetFPS=60;
 
 let onLevel=0;
+
+let timer=0;
+let startedTime=false;
 
 let trail=[];
 let jump=false;
@@ -314,6 +320,13 @@ function rectDivision(chars){
 }
 
 function setupLevel(lvl){
+  keys[controls.up]=false;
+  keys[controls.down]=false;
+  keys[controls.left]=false;
+  keys[controls.right]=false;
+  timer=0;
+  startedTime=false;
+
   onLevel=lvl;
   player.vx=0;
   player.vy=0;
@@ -638,6 +651,9 @@ function getGround(x,y){
 }
 
 function stepPlayer(){
+  if(startedTime){
+    timer++;
+  }
   if(player.z<-20){
     setupLevel(onLevel);
   }
@@ -990,8 +1006,6 @@ function drawMap(){
   ortho();
   resetMatrix();
 
-  textSize(30);
-  textAlign(LEFT,TOP);
 
   if(mouseIn){
     fps.push(frameRate());
@@ -1011,7 +1025,12 @@ function drawMap(){
     minFPS=(c*100>>0)/100;
   }
 
+  textSize(30);
+  textAlign(LEFT,TOP);
   text((c>>0)+" FPS\nMIN "+minFPS,-width/2,-height/2);
+  textSize(50);
+  textAlign(CENTER,TOP);
+  text((timer/60>>0)+":"+(''+timer%60).padStart(2,'0'),0,5-height/2);
 
 
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
@@ -1029,7 +1048,23 @@ function draw() {
 }
 
 function keyPressed(){
-  if(finish){
+  let pressedSomething=false;
+  for(let c in controls){
+    if(keyCode === controls[c]){
+      pressedSomething=true;
+      break;
+    }
+  }
+  if(!startedTime && pressedSomething && keyCode != controls.jump && keyCode != controls.spin && keyCode != controls.blink){
+    startedTime=true;
+  }
+
+  if(keyCode == controls.restart){
+    setupLevel(onLevel);
+    return;
+  }
+
+  if(pressedSomething && finish){
     onLevel=(onLevel+1)%gameMaps.length;
     currentMap=gameMaps[onLevel];
     setupLevel(onLevel);
