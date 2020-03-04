@@ -32,7 +32,7 @@ const gameMaps=[
       "   "]
   },
   {
-    title:"broken map",
+    title:"Thing",
     grid:[
       "                                    ",
       "     ,##################.           ",
@@ -78,6 +78,84 @@ const gameMaps=[
       "    w##[+++++]##w#[++++++GGGGGG####w",
       "    wl#########rwl##############wwww",
       "    wwwwwwwwwwwww"]
+  },
+  {
+    title:"Tread the line",
+    grid:[
+  "                              ",
+  "                     w+ +     ",
+  "                     w        ",
+  "          w    w  +       +   ",
+  "             w    w  w+       ",
+  "      + w      +     w        ",
+  "       w         w   w     +  ",
+  "   +    +  +         w        ",
+  "                     w        ",
+  "      +   w +   w    w        ",
+  "   +   w             w    +   ",
+  "w   w     +   +      w        ",
+  "                   w w        ",
+  "   +   +       w w   w        ",
+  "  w  +     +  w+     w        ",
+  "                     w     +  ",
+  "   w w  w + w    w   w +      ",
+  " w            +      w        ",
+  "     ++    ++      + w        ",
+  "      + w    ++  w   w      + ",
+  "       +  +    +   + w        ",
+  "  +  +      ++ w     w        ",
+  " w  w ww  w  +       w +      ",
+  "         +  w  w     w        ",
+  "               +     w        ",
+  "    +   +    w       w        ",
+  "     w    +          w        ",
+  "     +     wwww      w      + ",
+  "             S       w        ",
+  "         +           w  G     ",
+]
+  },
+  {
+    title:"Mandelbrot",
+    grid:[
+      "                                        ",
+      "                                        ",
+      "               # ++   ++ #              ",
+      "            + wwwww[ ]wwwww +           ",
+      "           +#w#####w+w#####w#+          ",
+      "            w###############w           ",
+      "          +w#################w+         ",
+      "          +w#################w+         ",
+      "     [  +  w#################w  +  ]    ",
+      "       +ww+w#################w+ww+      ",
+      "     + w##ww#################ww##w +    ",
+      "        ww+w#################w+ww       ",
+      "           w#################w          ",
+      "           w#################w          ",
+      "           +w###############w+          ",
+      "           +w###############w+          ",
+      "          +##w#############w##+         ",
+      "          +  +w###########w+  +         ",
+      "             + wwwwwGwwwww +            ",
+      "                 +##w##+                ",
+      "                  #www#                 ",
+      "                +]w###w[+               ",
+      "                +w#####w+               ",
+      "                #w#####w#               ",
+      "                +w#####w+               ",
+      "                ]#w###w#[               ",
+      "                 +#www#+                ",
+      "                  +}w{+                 ",
+      "                   +#+                  ",
+      "                    #                   ",
+      "                    #                   ",
+      "                    #                   ",
+      "                    +                   ",
+      "                    +                   ",
+      "                   l#r                  ",
+      "                    +                   ",
+      "                    +                   ",
+      "                    S                   ",
+      "                    +                   "]
   },
   {
     title:"Test map",
@@ -559,7 +637,7 @@ function playerCollision(i,j){
     case('.'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
-        {x:i+0.5,y:j+0.5},
+        {x:i+0.5001,y:j+0.5},
         {x:i-0.5,y:j+0.5},
       ],1,player.x,player.y,player.z,player.d/2);
     break;
@@ -574,7 +652,7 @@ function playerCollision(i,j){
     case(','):
       return shapeIntersect([
         {x:i+0.5001,y:j-0.5},
-        {x:i+0.5,y:j+0.5},
+        {x:i+0.5001,y:j+0.5},
         {x:i-0.5,y:j+0.5},
       ],1,player.x,player.y,player.z,player.d/2);
     break;
