@@ -2,6 +2,36 @@ const ZMAG=2;
 var currentMap;
 const gameMaps=[
   {
+    title:"Jump",
+    grid:[
+      "   ",
+      " G ",
+      " + ",
+      " + ",
+      " + ",
+      " + ",
+      " + ",
+      " + ",
+      "   ",
+      "   ",
+      "   ",
+      "   ",
+      "   ",
+      " + ",
+      " + ",
+      " + ",
+      "   ",
+      "   ",
+      "   ",
+      "   ",
+      "   ",
+      " + ",
+      " + ",
+      " S ",
+      " + ",
+      "   "]
+  },
+  {
     title:"broken map",
     grid:[
       "                                    ",
@@ -158,6 +188,7 @@ let blinkTimer=false;
 let blinked=false;
 
 let finish=false;
+let finishTransition=0;
 
 let startingHeight;
 let f;
@@ -288,6 +319,9 @@ function setupLevel(lvl){
   player.vy=0;
 
   trail=[];
+
+  finish=false;
+  finishTransition=0;
 
   jump=false;
   doubleJump=false;
@@ -476,6 +510,8 @@ function playerCollision(i,j){
   let temp;
   switch(t){
     case('+'):
+    case('G'):
+    case('S'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
         {x:i+0.5001,y:j-0.5},
@@ -592,7 +628,9 @@ function getGround(x,y){
     case(','):
       return Y-y>x-X?-100:1;
     case('G'):
-      finish=true;
+      if(player.z>=0){
+        finish=true;
+      }
       return 0;
     default:
       return 0;
@@ -854,7 +892,6 @@ function performanceMode(val){
   }
 }
 
-let finishTransition=0;
 function drawMap(){
   run();
   tileSize=min(width/16,height/16);
@@ -992,6 +1029,12 @@ function draw() {
 }
 
 function keyPressed(){
+  if(finish){
+    onLevel=(onLevel+1)%gameMaps.length;
+    currentMap=gameMaps[onLevel];
+    setupLevel(onLevel);
+    return;
+  }
   keys[keyCode]=true;
 }
 function keyReleased(){

@@ -1,5 +1,7 @@
 # Top Down Platformer
-To play, go to [here](https://efhiii.github.io/TDP)
+To play, go [here](https://efhiii.github.io/TDP)
+
+[Discord server](https://discord.gg/YgpHJEH)
 
 ## Controls
 `ARROW KEYS` - move
@@ -18,7 +20,7 @@ This can be fixed simply by enabling Hardware acceleration. For chrome, this can
 ### The Default graphics card is not your main graphics card
 I don't know why you'd ever want this, but for some reason Edge does this by default. This should only be an issue if you have multiple graphics cards, but many computers do, including my laptop.
 
-In Windows, you can fix this by going into `Windows settings`, clicking `System`, and under `Display`, scrolling down and clicking `Graphics settings`. For Edge, in the first drop down, select `Universal app`, and in the `Select an app` drop down, select Microsoft edge (for any other browser, you'd choose Classic app, and have to find the exe file, but I this is only an issue with Edge). Then click on it and click `Options`, and finally, select `High performance` and Save.
+In Windows, you can fix this by going into `Windows settings`, clicking `System`, and under `Display`, scrolling down and clicking `Graphics settings`. For Edge, in the first drop down, select `Universal app`, and in the `Select an app` drop down, select Microsoft edge (for any other browser, you'd choose Classic app, and have to find the exe file). Then click on it and click `Options`, select `High performance`, and Save.
 
 ### Background apps are consuming other resources
 If your computer is already making use of its resources in other applications, then, as you might expect, this game's performance will suffer. The obvious solution is to close those other applications.
