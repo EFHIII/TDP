@@ -235,7 +235,36 @@ const gameMaps=[
         "wS+++        w  ##      w            ",
         "wwwwwwwwwwwwwwwwwwwwwwwww            ",
         "                                     "]
-    },
+  },
+  {
+      title: "Square Off",
+      grid: [
+          "wwwwww+wwwwwwwwwwwwwwwww",
+          "w++++++##       ##   ++w",
+          "w++++++##       ##   ++w",
+          "w++wwwwww            ++w",
+          "w++     w            ++w",
+          "w++     wwwww  www   ++w",
+          "wwwwww  w      w     ++w",
+          "w++     w      w     ++w",
+          "w[+     w##wwwww  www++w",
+          "ww[     ###w         ++w",
+          "www.    ###w         ++w",
+          "wwww.   wwww   wwwwww++w",
+          "wwwww.  w   +++w     ++w",
+          "wwwww{  w   +++w     ++w",
+          "wwww{+  w   +++w     ++w",
+          "www{++ ww  wwwww     ++w",
+          "ww{++]www  #GGG#     ++w",
+          "w{++]www   #GGG#     ++w",
+          "#++]www    #GGG#     ++w",
+          "#S]www     #GGG#     ++w",
+          "#]www      #GGG#     ++w",
+          "#www+++++++++++++++++++w",
+          "www++++++++++++++++++++w",
+          "wwwwwwwwwwwwwwwwwwwwwwww",
+      ]
+    }
 ];
 
 let save={
@@ -290,7 +319,15 @@ const div={
   goal:[],
 };
 
-let keys=[];
+let keys = [];
+
+let lastInputChangeFrame = 0;
+let frame = 0;
+let replay = {
+  levelTitle: "",
+  controlState:[]
+};
+let playback = false;
 const controls={
   up:38,
   down:40,
@@ -304,6 +341,7 @@ const controls={
   nextLevel2:10,
   skipLevel:83
 };
+const controlTypes = Object.keys(controls);
 /*
   up:87,
   down:83,
@@ -486,6 +524,16 @@ function setupLevel(lvl,restarting){
   keys[controls.down]=false;
   keys[controls.left]=false;
   keys[controls.right]=false;
+
+  lastInputChangeFrame = 0;
+  frame=0;
+  if (!playback) {
+    replay = {
+      levelTitle: gameMaps[lvl].title,
+      controlState: []
+    };
+  }
+
   timer=0;
   startedTime=false;
 
@@ -843,6 +891,8 @@ function getGround(x,y){
           save.mapTimes[currentMap.title]=timer;
           setCookie();
         }
+
+        console.log(JSON.stringify(replay))
       }
       return 0;
     default:
@@ -850,8 +900,42 @@ function getGround(x,y){
   }
 }
 
-function stepPlayer(){
-  if(finish){return;}
+function stepPlayer() {
+
+  if (finish) { return; }
+
+  //Either we're watching a replay, or we're making one
+  if (playback) {
+    if (frame === 0 || replay.controlState[frame]) {
+      lastInputChangeFrame = frame;
+
+      //Read the keys
+      let controlState = replay.controlState[frame];
+      [...controlState.keys()].forEach(index => keys[controls[controlTypes[index]]] = controlState[index]);
+    } else {
+      //Otherwise keep the keys as they are
+    }
+    
+  } else {
+    let controlState = controlTypes.map(controlType => controls[controlType]).map(controlKey => keys[controlKey]);
+    //If we just started the game, then track the first frame of input
+    if (frame === 0) {
+      lastInputChangeFrame = frame;
+      replay.controlState[lastInputChangeFrame] = controlState;
+    } else {
+      let lastControlState = replay.controlState[lastInputChangeFrame];
+      let inputChanged = !([...Array(controlTypes.length).keys()].every(index => controlState[index] === lastControlState[index]));
+      if (inputChanged) {
+        lastInputChangeFrame = frame;
+        replay.controlState[lastInputChangeFrame] = controlState;
+      }
+    }
+  }
+  frame++;
+  if (!startedTime && (keys[controls.up] || keys[controls.down] || keys[controls.left] || keys[controls.right])) {
+    startedTime = true;
+  }
+
   if(startedTime){
     timer++;
   }
@@ -908,17 +992,21 @@ function stepPlayer(){
       player.vx+=v*player.a*spin*player.sb;
     }
   }
-  if(player.z===ground&&!jump&&keys[controls.jump]){
-    jump=true;
-    player.vz+=player.az;
-  }
-  else if(player.z>ground&&!doubleJump&&!jump&&keys[controls.jump]){
-    doubleJump=true;
-    player.vz*=-0.25;
-    player.vz+=player.az;
-  }
-  else if(!jump&&keys[controls.jump]){
-    jump=true;
+  if (keys[controls.jump] && !jump) {
+    if (player.z === ground) {
+      jump = true;
+      player.vz += player.az;
+    }
+    else if (player.z > ground && !doubleJump) {
+      doubleJump = true;
+      player.vz *= -0.25;
+      player.vz += player.az;
+    }
+    else {
+      jump = true;
+    }
+  } else if (jump && !keys[controls.jump]) {
+    jump = false;
   }
 
   if(!spinning){spin=0;}
@@ -1254,17 +1342,15 @@ function draw() {
   drawMap();
 }
 
-function keyPressed(){
-
-  if(!startedTime && (keyCode == controls.up || keyCode == controls.down || keyCode == controls.left || keyCode == controls.right)){
-    startedTime=true;
-  }
-
+function keyPressed() {
   if(keyCode == controls.restart){
     setupLevel(onLevel,true);
     return;
   }
-
+  //For now, we don't let the player do anything during playback
+  if (playback) {
+    return;
+  }
   if(keyCode == controls.skipLevel ||((keyCode == controls.nextLevel ||keyCode == controls.nextLevel2) && finish)){
     onLevel=(onLevel+1)%gameMaps.length;
     currentMap=gameMaps[onLevel];
@@ -1273,9 +1359,12 @@ function keyPressed(){
   }
   keys[keyCode]=true;
 }
-function keyReleased(){
+function keyReleased() {
+  //For now, we don't let the player do anything during playback
+  if (playback) {
+    return;
+  }
   keys[keyCode]=false;
-  if(keyCode===controls.jump){jump=false;}
 }
 
 /*
