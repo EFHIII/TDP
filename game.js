@@ -708,11 +708,13 @@ function shapeIntersect(points,sz,x,y,z,r){
 }
 
 function playerCollision(i,j){
+  // i is X, j is Y for the currentMap.grid
   if(i<0||j<0){return;}
   let t=currentMap.grid.length>j?(currentMap.grid[j].length>i?currentMap.grid[j][i]:false):false;
   if(t===false){return;}
   let temp;
   switch(t){
+    // normal ground
     case('+'):
     case('G'):
     case('S'):
@@ -723,6 +725,7 @@ function playerCollision(i,j){
         {x:i-0.5,y:j+0.5},
       ],0,player.x,player.y,player.z,player.d/2);
     break;
+    // ledge
     case('#'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
@@ -731,6 +734,7 @@ function playerCollision(i,j){
         {x:i-0.5,y:j+0.5},
       ],1,player.x,player.y,player.z,player.d/2);
     break;
+    //wall
     case('w'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
@@ -739,6 +743,7 @@ function playerCollision(i,j){
         {x:i-0.5,y:j+0.5},
       ],5,player.x,player.y,player.z,player.d/2);
     break;
+    // triangles
     case('['):
       temp=shapeIntersect([
         {x:i-0.5001,y:j-0.5},
