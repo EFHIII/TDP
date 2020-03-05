@@ -1132,7 +1132,7 @@ function drawMap(){
   text((c>>0)+" FPS\nMIN "+minFPS,-width/2,-height/2);
   textSize(40);
   textAlign(CENTER,TOP);
-  text((1+onLevel)+"-"+currentMap.title+"\n"+(timer/120>>0)+":"+(''+(1000*(timer%120)/120>>0)).padStart(3,'0'),0,5-height/2);
+  text((1+onLevel)+"-"+currentMap.title+"\n"+(timer/120/60>>0)+":"+(""+(timer/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(timer%120)/120>>0)).padStart(3,'0'),0,5-height/2);
 
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
