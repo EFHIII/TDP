@@ -80,7 +80,7 @@ const gameMaps=[
       "    wwwwwwwwwwwww"]
   },
   {
-    title:"Tread the line",
+    title:"A horrible level",
     grid:[
   "                              ",
   "                     w+ +     ",
@@ -1128,9 +1128,9 @@ function drawMap(){
   textSize(30);
   textAlign(LEFT,TOP);
   text((c>>0)+" FPS\nMIN "+minFPS,-width/2,-height/2);
-  textSize(50);
+  textSize(40);
   textAlign(CENTER,TOP);
-  text((timer/60>>0)+":"+(''+timer%60).padStart(2,'0'),0,5-height/2);
+  text((1+onLevel)+"-"+currentMap.title+"\n"+(timer/60>>0)+":"+(''+timer%60).padStart(2,'0'),0,5-height/2);
 
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
