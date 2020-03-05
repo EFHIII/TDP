@@ -527,11 +527,12 @@ function setupLevel(lvl,restarting){
 
   lastInputChangeFrame = 0;
   frame=0;
-  replay = {
-    levelTitle: gameMaps[lvl].title,
-    controlState: []
-  };
-
+  if (!playback) {
+    replay = {
+      levelTitle: gameMaps[lvl].title,
+      controlState: []
+    };
+  }
 
   timer=0;
   startedTime=false;
@@ -885,6 +886,8 @@ function getGround(x,y){
           save.mapTimes[currentMap.title]=timer;
           setCookie();
         }
+
+        console.log(JSON.stringify(replay))
       }
       return 0;
     default:
@@ -898,12 +901,12 @@ function stepPlayer() {
 
   //Either we're watching a replay, or we're making one
   if (playback) {
-    if (replay.controlState[frame]) {
+    if (frame === 0 || replay.controlState[frame]) {
       lastInputChangeFrame = frame;
 
       //Read the keys
       let controlState = replay.controlState[frame];
-      controlState.keys().forEach(index => keys[controlTypes[index]] = controlState[index]);
+      [...controlState.keys()].forEach(index => keys[controls[controlTypes[index]]] = controlState[index]);
     } else {
       //Otherwise keep the keys as they are
     }
@@ -1335,16 +1338,14 @@ function draw() {
 }
 
 function keyPressed() {
-  //For now, we don't let the player do anything during playback
-  if (playback) {
-    return;
-  }
-
   if(keyCode == controls.restart){
     setupLevel(onLevel,true);
     return;
   }
-
+  //For now, we don't let the player do anything during playback
+  if (playback) {
+    return;
+  }
   if(keyCode == controls.skipLevel ||((keyCode == controls.nextLevel ||keyCode == controls.nextLevel2) && finish)){
     onLevel=(onLevel+1)%gameMaps.length;
     currentMap=gameMaps[onLevel];
