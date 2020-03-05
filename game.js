@@ -204,7 +204,35 @@ const gameMaps=[
       "    w#[+++++++]#w#[++++++GGGGGG#    ",
       "    wl#########rwl##############    ",
       "    wwwwwwwwwwwww"]
-  }
+  },
+  {
+    title: "Bemazed",
+    grid: [
+        "             ########################",
+        "             #++++++++++++++++GGGG++#",
+        "             #++++++++++++++++GGGG++#",
+        "             #++++           #GGGG++#",
+        "             #++++           #GGGG++#",
+        "wwwwwwwwwwwwww++++##         #####++#",
+        "w            w++++##              ++#",
+        "w            wwwww  wwwwwwwwwwwwww++#",
+        "w####   w     ++                  ++#",
+        "w####   w     ++                  ++#",
+        "wwwww   wwwwwwwwww    wwww  wwww  ++#",
+        "w            w    ##     w  w     ++#",
+        "w            w    ##     w  w     ++#",
+        "w## w        w  ####     wGGw     ++#",
+        "w## w        w  ####     wGGw     ++#",
+        "w   w++##    www##wwwwwwwwwww     ++#",
+        "w   w++##         w##   ++++++++++++#",
+        "w   w  ++         w##   ++++++++++++#",
+        "w   w  ++         w##   w############",
+        "w++ wwwwwww  w  ##w##   w            ",
+        "w++          w  ##wwww  w            ",
+        "w++++        w  ##      w            ",
+        "wS+++        w  ##      w            ",
+        "wwwwwwwwwwwwwwwwwwwwwwwww            "]
+    },
 ];
 const div={
   floor:[],
@@ -440,8 +468,9 @@ function setupLevel(lvl){
       }
     }
   }
-  camera.x=player.x;
-  camera.y=player.y;
+  camera.x=currentMap.grid[0].length/2;
+  camera.y=currentMap.grid.length/2;
+  camera.z=Math.max(camera.x,camera.y)*2;
 
   div.floor=rectDivision('+S[]{}');
   div.rail=rectDivision('#');
@@ -1020,17 +1049,22 @@ function drawMap(){
     camera.z+=(player.z-camera.z-3)*0.1;
     finishTransition+=(1-finishTransition)*0.1;
   }
+  else if(!startedTime && camera.z>1){
+    camera.z-=0.3-0.3/camera.z;
+    camera.x+=(player.x-camera.x)*0.03;
+    camera.y+=(player.y-camera.y)*0.03;
+  }
   else{
     camera.z*=0.95;
+    camera.x+=(player.x-camera.x)*0.3;
+    camera.y+=(player.y-camera.y)*0.3;
   }
 
-  camera.x+=(player.x-camera.x)*0.3;
-  camera.y+=(player.y-camera.y)*0.3;
   camera.z+=Math.sqrt((player.vx*player.vx+player.vy*player.vy)*10)*0.005*tileSize;
+  let t=HALF_PI/4;
 
   push();
     scale(startingHeight/height);
-
     translate(-camera.x*tileSize,-camera.y*tileSize);
     if(finish){
       translate(0,0,(-player.z*tileSize*ZMAG)*finishTransition);
