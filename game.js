@@ -239,31 +239,32 @@ const gameMaps=[
   {
       title: "Square Off",
       grid: [
-          "wwwwww+wwwwwwwwwwwwwwwww",
-          "w++++++##       ##   ++w",
-          "w++++++##       ##   ++w",
-          "w++wwwwww            ++w",
-          "w++     w            ++w",
-          "w++     wwwww  www   ++w",
-          "wwwwww  w      w     ++w",
-          "w++     w      w     ++w",
-          "w[+     w##wwwww  www++w",
-          "ww[     ###w         ++w",
-          "www.    ###w         ++w",
-          "wwww.   wwww   wwwwww++w",
-          "wwwww.  w   +++w     ++w",
-          "wwwww{  w   +++w     ++w",
-          "wwww{+  w   +++w     ++w",
-          "www{++ ww  wwwww     ++w",
-          "ww{++]www  #GGG#     ++w",
-          "w{++]www   #GGG#     ++w",
-          "#++]www    #GGG#     ++w",
-          "#S]www     #GGG#     ++w",
-          "#]www      #GGG#     ++w",
-          "#www+++++++++++++++++++w",
-          "www++++++++++++++++++++w",
-          "wwwwwwwwwwwwwwwwwwwwwwww",
-      ]
+          "                          ",
+          " wwwwww+wwwwwwwwwwwwwwwww ",
+          " w++++++##       ##   ++w ",
+          " w++++++##       ##   ++w ",
+          " w++wwwwww            ++w ",
+          " w++     w            ++w ",
+          " w++     wwwww  www   ++w ",
+          " wwwwww  w      w     ++w ",
+          " w++     w      w     ++w ",
+          " w[+     w##wwwww  www++w ",
+          " ww[     ###w         ++w ",
+          " www.    ###w         ++w ",
+          " wwww.   wwww   wwwwww++w ",
+          " wwwww.  w   +++w     ++w ",
+          " wwwww{  w   +++w     ++w ",
+          " wwww{+  w   +++w     ++w ",
+          " www{++ ww  wwwww     ++w ",
+          " ww{++]www  #GGG#     ++w ",
+          " w{++]www   #GGG#     ++w ",
+          " #++]www    #GGG#     ++w ",
+          " #S]www     #GGG#     ++w ",
+          " #]www      #GGG#     ++w ",
+          " #www+++++++++++++++++++w ",
+          " www++++++++++++++++++++w ",
+          " wwwwwwwwwwwwwwwwwwwwwwww ",
+          "                          "]
     }
 ];
 
@@ -915,7 +916,7 @@ function stepPlayer() {
     } else {
       //Otherwise keep the keys as they are
     }
-    
+
   } else {
     let controlState = controlTypes.map(controlType => controls[controlType]).map(controlKey => keys[controlKey]);
     //If we just started the game, then track the first frame of input
