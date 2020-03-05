@@ -14,6 +14,8 @@ To play, go [here](https://efhiii.github.io/TDP)
 
 `R` - restart level
 
+`S` - skip level
+
 `ENTER` - continue to next level (after finishing a level)
 
 # FAQ
@@ -49,5 +51,6 @@ This is a bit trickier to solve, but you shouldn't assume this to be the problem
   - moving platforms?
   - deadly-to-touch elements
   - different elevation platforms
+- Save cookie of levels passed and replays
 - make levels
 - make TAS mode

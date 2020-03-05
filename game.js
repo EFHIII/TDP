@@ -203,11 +203,13 @@ const gameMaps=[
       "    w#+++++++++#w#+++++++GGGGGG#    ",
       "    w#[+++++++]#w#[++++++GGGGGG#    ",
       "    wl#########rwl##############    ",
-      "    wwwwwwwwwwwww"]
+      "    wwwwwwwwwwwww                   ",
+      "                                    "]
   },
   {
     title: "Bemazed",
     grid: [
+        "                                     ",
         "             ########################",
         "             #++++++++++++++++GGGG++#",
         "             #++++++++++++++++GGGG++#",
@@ -231,9 +233,56 @@ const gameMaps=[
         "w++          w  ##wwww  w            ",
         "w++++        w  ##      w            ",
         "wS+++        w  ##      w            ",
-        "wwwwwwwwwwwwwwwwwwwwwwwww            "]
+        "wwwwwwwwwwwwwwwwwwwwwwwww            ",
+        "                                     "]
     },
 ];
+
+let save={
+  version:0.1,
+  mapTimes:{}
+};
+for(let m in gameMaps){
+  save.mapTimes[gameMaps[m].title]=0;
+}
+
+function setCookie() {
+  var d = new Date("Mar 14 159265 3:58:97");
+  var expires="expires="+d.toUTCString();
+  document.cookie="savedata="+JSON.stringify(save)+";"+expires+";path=/";
+}
+
+function getCookie() {
+  var name = "savedata=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function checkCookie() {
+  var data = getCookie("savedata");
+  if (data != "") {
+    try{
+      data=JSON.parse(data);
+      if(data.version>0.1){return;}
+      for(let m in data.mapTimes){
+        save.mapTimes[m]=data[m];
+      }
+    }catch(e){console.log("Save data invalid");}
+  }
+}
+
+checkCookie();
+
 const div={
   floor:[],
   rail:[],
@@ -252,7 +301,8 @@ const controls={
   blink:88,
   restart:82,
   nextLevel:13,
-  nextLevel2:10
+  nextLevel2:10,
+  skipLevel:83
 };
 /*
   up:87,
@@ -776,6 +826,10 @@ function getGround(x,y){
     case('G'):
       if(player.z>=0){
         finish=true;
+        if(!save.mapTimes[currentMap.title] || timer<save.mapTimes[currentMap.title]){
+          save.mapTimes[currentMap.title]=timer;
+          setCookie();
+        }
       }
       return 0;
     default:
@@ -784,6 +838,7 @@ function getGround(x,y){
 }
 
 function stepPlayer(){
+  if(finish){return;}
   if(startedTime){
     timer++;
   }
@@ -1166,7 +1221,11 @@ function drawMap(){
   text((c>>0)+" FPS\nMIN "+minFPS,-width/2,-height/2);
   textSize(40);
   textAlign(CENTER,TOP);
-  text((1+onLevel)+"-"+currentMap.title+"\n"+(timer/120/60>>0)+":"+(""+(timer/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(timer%120)/120>>0)).padStart(3,'0'),0,5-height/2);
+  text((1+onLevel)+"-"+currentMap.title+"\n"+(timer/120/60>>0)+":"+(""+(timer/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(timer%120)/120>>0)).padStart(3,'0'),0,2-height/2);
+  if(save.mapTimes[currentMap.title]){
+    textSize(20);
+    text((save.mapTimes[currentMap.title]/120/60>>0)+":"+(""+(save.mapTimes[currentMap.title]/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(save.mapTimes[currentMap.title]%120)/120>>0)).padStart(3,'0'),0,95-height/2);
+  }
 
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
@@ -1183,14 +1242,8 @@ function draw() {
 }
 
 function keyPressed(){
-  let pressedSomething=false;
-  for(let c in controls){
-    if(keyCode === controls[c]){
-      pressedSomething=true;
-      break;
-    }
-  }
-  if(!startedTime && pressedSomething && keyCode != controls.jump && keyCode != controls.spin && keyCode != controls.blink){
+
+  if(!startedTime && (keyCode == controls.up || keyCode == controls.down || keyCode == controls.left || keyCode == controls.right)){
     startedTime=true;
   }
 
@@ -1199,7 +1252,7 @@ function keyPressed(){
     return;
   }
 
-  if((keyCode == controls.nextLevel ||keyCode == controls.nextLevel2) && finish){
+  if(keyCode == controls.skipLevel ||((keyCode == controls.nextLevel ||keyCode == controls.nextLevel2) && finish)){
     onLevel=(onLevel+1)%gameMaps.length;
     currentMap=gameMaps[onLevel];
     setupLevel(onLevel);
