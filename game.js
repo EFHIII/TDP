@@ -235,7 +235,36 @@ const gameMaps=[
         "wS+++        w  ##      w            ",
         "wwwwwwwwwwwwwwwwwwwwwwwww            ",
         "                                     "]
-    },
+  },
+  {
+      title: "Square Off",
+      grid: [
+          "wwwwww+wwwwwwwwwwwwwwwww",
+          "w++++++##       ##   ++w",
+          "w++++++##       ##   ++w",
+          "w++wwwwww            ++w",
+          "w++     w            ++w",
+          "w++     wwwww  www   ++w",
+          "wwwwww  w      w     ++w",
+          "w++     w      w     ++w",
+          "w[+     w##wwwww  www++w",
+          "ww[     ###w         ++w",
+          "www.    ###w         ++w",
+          "wwww.   wwww   wwwwww++w",
+          "wwwww.  w   +++w     ++w",
+          "wwwww{  w   +++w     ++w",
+          "wwww{+  w   +++w     ++w",
+          "www{++ ww  wwwww     ++w",
+          "ww{++]www  #GGG#     ++w",
+          "w{++]www   #GGG#     ++w",
+          "#++]www    #GGG#     ++w",
+          "#S]www     #GGG#     ++w",
+          "#]www      #GGG#     ++w",
+          "#www+++++++++++++++++++w",
+          "www++++++++++++++++++++w",
+          "wwwwwwwwwwwwwwwwwwwwwwww",
+      ]
+    }
 ];
 
 let save={
