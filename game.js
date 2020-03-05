@@ -319,7 +319,14 @@ const div={
   goal:[],
 };
 
-let keys=[];
+let keys = [];
+
+let lastInputChangeFrame = 0;
+let frame = 0;
+let replay = {
+  levelTitle: "",
+  controlState:[]
+};
 const controls={
   up:38,
   down:40,
@@ -333,6 +340,7 @@ const controls={
   nextLevel2:10,
   skipLevel:83
 };
+const controlTypes = Object.keys(controls);
 /*
   up:87,
   down:83,
@@ -515,6 +523,15 @@ function setupLevel(lvl,restarting){
   keys[controls.down]=false;
   keys[controls.left]=false;
   keys[controls.right]=false;
+
+  lastInputChangeFrame = 0;
+  frame=0;
+  replay = {
+    levelTitle: gameMaps[lvl].title,
+    controlState: []
+  };
+
+
   timer=0;
   startedTime=false;
 
@@ -874,8 +891,30 @@ function getGround(x,y){
   }
 }
 
-function stepPlayer(){
-  if(finish){return;}
+function stepPlayer() {
+
+  if (finish) { return; }
+
+  let controlState = controlTypes.map(controlType => controls[controlType]).map(controlKey => keys[controlKey]);
+  //If we just started the game, then track the first frame of input
+  if (frame === 0) {
+    lastInputChangeFrame = frame;
+    replay.controlState[lastInputChangeFrame] = controlState;
+  } else {
+    let lastControlState = replay.controlState[lastInputChangeFrame];
+    let inputChanged = !([...Array(controlTypes.length).keys()].every(index => controlState[index] === lastControlState[index]));
+    if (inputChanged) {
+      lastInputChangeFrame = frame;
+      replay.controlState[lastInputChangeFrame] = controlState;
+    }
+  }
+  frame++;
+  console.log(replay);
+
+  if (!startedTime && (keys[controls.up] || keys[controls.down] || keys[controls.left] || keys[controls.right])) {
+    startedTime = true;
+  }
+
   if(startedTime){
     timer++;
   }
@@ -932,17 +971,21 @@ function stepPlayer(){
       player.vx+=v*player.a*spin*player.sb;
     }
   }
-  if(player.z===ground&&!jump&&keys[controls.jump]){
-    jump=true;
-    player.vz+=player.az;
-  }
-  else if(player.z>ground&&!doubleJump&&!jump&&keys[controls.jump]){
-    doubleJump=true;
-    player.vz*=-0.25;
-    player.vz+=player.az;
-  }
-  else if(!jump&&keys[controls.jump]){
-    jump=true;
+  if (keys[controls.jump] && !jump) {
+    if (player.z === ground) {
+      jump = true;
+      player.vz += player.az;
+    }
+    else if (player.z > ground && !doubleJump) {
+      doubleJump = true;
+      player.vz *= -0.25;
+      player.vz += player.az;
+    }
+    else {
+      jump = true;
+    }
+  } else if (jump && !keys[controls.jump]) {
+    jump = false;
   }
 
   if(!spinning){spin=0;}
@@ -1280,10 +1323,6 @@ function draw() {
 
 function keyPressed(){
 
-  if(!startedTime && (keyCode == controls.up || keyCode == controls.down || keyCode == controls.left || keyCode == controls.right)){
-    startedTime=true;
-  }
-
   if(keyCode == controls.restart){
     setupLevel(onLevel,true);
     return;
@@ -1299,7 +1338,6 @@ function keyPressed(){
 }
 function keyReleased(){
   keys[keyCode]=false;
-  if(keyCode===controls.jump){jump=false;}
 }
 
 /*
