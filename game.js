@@ -1,4 +1,4 @@
-const ZMAG=2;
+const ZMAG=1.5;
 var currentMap;
 const gameMaps=[
   {
@@ -226,6 +226,12 @@ const controls={
   nextLevel:13,
   nextLevel2:10
 };
+/*
+  up:87,
+  down:83,
+  left:65,
+  right:68,
+*/
 const camera={
   x:0,
   y:0,
@@ -442,7 +448,7 @@ function setupLevel(lvl){
   div.wall=rectDivision('w');
   div.goal=rectDivision('G');
 }
-setupLevel(0);
+setupLevel(onLevel);
 
 var tileSize=0;
 const dirAr=[[0,1],[-1,0],[0,-1],[1,0]];
@@ -518,9 +524,9 @@ function drawBox(x,y,w,h,z,r,g,b){
 
     push();
 
-      rotateZ(PI/2*k);
+      rotateZ(HALF_PI*k);
       translate(0,tileSize/2*(k%2?w:h),-tileSize/2*z*ZMAG);
-      rotateX(PI/2);
+      rotateX(HALF_PI);
       plane(tileSize*(k%2?h:w),tileSize*z*ZMAG);
     pop();
   }
@@ -528,11 +534,31 @@ function drawBox(x,y,w,h,z,r,g,b){
 }
 
 function triangleBox(x,y,z,r){
+  let k=-(r+3)/2;
+  let h=1,w=1;
+  push();
+    fill(sin((k-1)*HALF_PI)*10+45);
+    translate(x*tileSize,y*tileSize);
+    rotateZ(HALF_PI*k);
+    translate(0,tileSize/2,-tileSize/2*z*ZMAG);
+    rotateX(HALF_PI);
+    plane(tileSize,tileSize*z*ZMAG);
+  pop();
+  k++;
+  push();
+    fill(sin((k-1)*HALF_PI)*10+45);
+    translate(x*tileSize,y*tileSize);
+    rotateZ(HALF_PI*k);
+    translate(0,tileSize/2,-tileSize/2*z*ZMAG);
+    rotateX(HALF_PI);
+    plane(tileSize,tileSize*z*ZMAG);
+  pop();
+
   fill(sin((r+4)*QUARTER_PI)*10+45);
   push();
     translate(x*tileSize,y*tileSize,(-(z+1)/2+0.5)*tileSize*ZMAG);
-    rotateZ(PI/4*r);
-    rotateX(PI/2);
+    rotateZ(QUARTER_PI*r);
+    rotateX(HALF_PI);
     plane(tileSize*1.4142135623730951,tileSize*z*ZMAG);
   pop();
 
@@ -707,9 +733,9 @@ function getGround(x,y){
     case(']'):
       return Y-y>x-X?0:1;
     case('l'):
-      return y-Y>x-X?1:-100;
+      return y-Y>x-X?-100:1;
     case('r'):
-      return Y-y>x-X?-100:1;
+      return Y-y>x-X?1:-100;
     case('}'):
       return y-Y>x-X?0:1;
     case('{'):
@@ -1021,19 +1047,15 @@ function drawMap(){
     for(let j=0;j<currentMap.grid[i].length;j++){
       switch(currentMap.grid[i][j]){
         case("l"):
-          fill(40);
           triangleBox(j,i,1,1);
         break;
         case("r"):
-          fill(40);
           triangleBox(j,i,1,3);
         break;
         case(","):
-          fill(40);
           triangleBox(j,i,1,7);
         break;
         case("."):
-          fill(40);
           triangleBox(j,i,1,5);
         break;
         case("}"):
@@ -1110,7 +1132,6 @@ function drawMap(){
   textAlign(CENTER,TOP);
   text((timer/60>>0)+":"+(''+timer%60).padStart(2,'0'),0,5-height/2);
 
-
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
@@ -1142,7 +1163,7 @@ function keyPressed(){
     return;
   }
 
-  if(pressedSomething && finish){
+  if((keyCode == controls.nextLevel ||keyCode == controls.nextLevel2) && finish){
     onLevel=(onLevel+1)%gameMaps.length;
     currentMap=gameMaps[onLevel];
     setupLevel(onLevel);
