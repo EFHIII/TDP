@@ -481,7 +481,7 @@ function rectDivision(chars){
   return rects;
 }
 
-function setupLevel(lvl){
+function setupLevel(lvl,restarting){
   keys[controls.up]=false;
   keys[controls.down]=false;
   keys[controls.left]=false;
@@ -518,9 +518,17 @@ function setupLevel(lvl){
       }
     }
   }
-  camera.x=currentMap.grid[0].length/2;
-  camera.y=currentMap.grid.length/2;
-  camera.z=Math.max(camera.x,camera.y)*2;
+
+  if(!restarting){
+    camera.x=currentMap.grid[0].length/2;
+    camera.y=currentMap.grid.length/2;
+    camera.z=Math.max(camera.x,camera.y)*2;
+  }
+  else{
+    camera.x=player.x;
+    camera.y=player.y;
+    camera.z=0;
+  }
 
   div.floor=rectDivision('+S[]{}');
   div.rail=rectDivision('#');
@@ -843,7 +851,7 @@ function stepPlayer(){
     timer++;
   }
   if(player.z<-20){
-    setupLevel(onLevel);
+    setupLevel(onLevel,true);
   }
   let ground=getGround(player.x,player.y);
   for(let i=0;i<PI*2;i+=PI/4){
@@ -1248,7 +1256,7 @@ function keyPressed(){
   }
 
   if(keyCode == controls.restart){
-    setupLevel(onLevel);
+    setupLevel(onLevel,true);
     return;
   }
 
