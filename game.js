@@ -327,6 +327,7 @@ let replay = {
   levelTitle: "",
   controlState:[]
 };
+let playback = false;
 const controls={
   up:38,
   down:40,
@@ -895,22 +896,34 @@ function stepPlayer() {
 
   if (finish) { return; }
 
-  let controlState = controlTypes.map(controlType => controls[controlType]).map(controlKey => keys[controlKey]);
-  //If we just started the game, then track the first frame of input
-  if (frame === 0) {
-    lastInputChangeFrame = frame;
-    replay.controlState[lastInputChangeFrame] = controlState;
+  //Either we're watching a replay, or we're making one
+  if (playback) {
+    if (replay.controlState[frame]) {
+      lastInputChangeFrame = frame;
+
+      //Read the keys
+      let controlState = replay.controlState[frame];
+      controlState.keys().forEach(index => keys[controlTypes[index]] = controlState[index]);
+    } else {
+      //Otherwise keep the keys as they are
+    }
+    
   } else {
-    let lastControlState = replay.controlState[lastInputChangeFrame];
-    let inputChanged = !([...Array(controlTypes.length).keys()].every(index => controlState[index] === lastControlState[index]));
-    if (inputChanged) {
+    let controlState = controlTypes.map(controlType => controls[controlType]).map(controlKey => keys[controlKey]);
+    //If we just started the game, then track the first frame of input
+    if (frame === 0) {
       lastInputChangeFrame = frame;
       replay.controlState[lastInputChangeFrame] = controlState;
+    } else {
+      let lastControlState = replay.controlState[lastInputChangeFrame];
+      let inputChanged = !([...Array(controlTypes.length).keys()].every(index => controlState[index] === lastControlState[index]));
+      if (inputChanged) {
+        lastInputChangeFrame = frame;
+        replay.controlState[lastInputChangeFrame] = controlState;
+      }
     }
   }
   frame++;
-  console.log(replay);
-
   if (!startedTime && (keys[controls.up] || keys[controls.down] || keys[controls.left] || keys[controls.right])) {
     startedTime = true;
   }
@@ -1321,7 +1334,11 @@ function draw() {
   drawMap();
 }
 
-function keyPressed(){
+function keyPressed() {
+  //For now, we don't let the player do anything during playback
+  if (playback) {
+    return;
+  }
 
   if(keyCode == controls.restart){
     setupLevel(onLevel,true);
@@ -1336,7 +1353,11 @@ function keyPressed(){
   }
   keys[keyCode]=true;
 }
-function keyReleased(){
+function keyReleased() {
+  //For now, we don't let the player do anything during playback
+  if (playback) {
+    return;
+  }
   keys[keyCode]=false;
 }
 
