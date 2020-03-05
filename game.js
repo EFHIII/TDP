@@ -269,13 +269,13 @@ function getCookie() {
 }
 
 function checkCookie() {
-  var data = getCookie("savedata");
+  var data = getCookie();
   if (data != "") {
     try{
       data=JSON.parse(data);
       if(data.version>0.1){return;}
       for(let m in data.mapTimes){
-        save.mapTimes[m]=data[m];
+        save.mapTimes[m]=data.mapTimes[m];
       }
     }catch(e){console.log("Save data invalid");}
   }
