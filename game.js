@@ -4,212 +4,208 @@ const gameMaps=[
   {
     title:"Jump",
     grid:[
-      "   ",
-      " G ",
-      " + ",
-      " + ",
-      " + ",
-      " + ",
-      " + ",
-      " + ",
-      "   ",
-      "   ",
-      "   ",
-      "   ",
-      "   ",
-      " + ",
-      " + ",
-      " + ",
-      "   ",
-      "   ",
-      "   ",
-      "   ",
-      "   ",
-      " + ",
-      " + ",
-      " S ",
-      " + ",
-      "   "]
+      "G",
+      "+",
+      "+",
+      "+",
+      "+",
+      "+",
+      "+",
+      " ",
+      " ",
+      " ",
+      " ",
+      " ",
+      "+",
+      "+",
+      "+",
+      " ",
+      " ",
+      " ",
+      " ",
+      " ",
+      "+",
+      "+",
+      "S",
+      "+"],
+    stars:[180,120,96,84]
   },
   {
     title:"Thing",
     grid:[
-      "                                    ",
-      "     ,##################.           ",
-      "     ##{++++++++++++++}##           ",
-      "     #{++++++++++++++++}#           ",
-      "     #++++++++++++++++++#           ",
-      "     #++++++++++++++++++#           ",
-      "     #+++++++++###++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++###++++++#wwwwwwwwwww",
-      "     #++++++++++++++++++#       l##w",
-      "     #++++++++++++++++++#        l#w",
-      "     #[+++++++]###++++++#wwww     lw",
-      "    w##[+++++]##w#++++++#w         w",
-      "    ww###+++###ww#++++++#w     ++++w",
-      "    w##{+++++}##w#++++++#w     ++++w",
-      "    w#{+++++++}#w#++++++#w     ++++w",
-      "    w#+++++++++#w#++++++#w     ++++w",
-      "    w#+++++++++#w#++++++#w         w",
-      "    w#+++++++++#w#++++++#w         w",
-      "    w#+++++++++#w#++++++#w++++     w",
-      "    w#+++++++++#w#++++++#w++++     w",
-      "    w#+++++++++#w#++++++#w++++     w",
-      "    w#+++++++++#w#++++++#w++++     w",
-      "    w#+++++++++#w#++++++#w         w",
-      "    w#[+++++++]#w#++++++#w         w",
-      "    w##[+++++]##w#++++++#w     ++++w",
-      "    ww###+++###ww#++++++#w     ++++w",
-      "    w##{+++++}##w#++++++#w     ++++w",
-      "    w#{+++++++}#w#++++++#w     ++++w",
-      "    w#+++++++++#w#++++++###########w",
-      "    w#+++++++++#w#+++++++GGGGGG####w",
-      "    w#+++++++++#w#+++++++GGGGGG####w",
-      "    w#+++++++++#w#+++++++GGGGGG####w",
-      "    w#++++S++++#w#+++++++GGGGGG####w",
-      "    w#[+++++++]#w#+++++++GGGGGG####w",
-      "    w##[+++++]##w#[++++++GGGGGG####w",
-      "    wl#########rwl##############wwww",
-      "    wwwwwwwwwwwww"]
+      " ,##################.           ",
+      " ##{++++++++++++++}##           ",
+      " #{++++++++++++++++}#           ",
+      " #++++++++++++++++++#           ",
+      " #++++++++++++++++++#           ",
+      " #+++++++++###++++++#           ",
+      " #+++++++++#w#++++++#           ",
+      " #+++++++++#w#++++++#           ",
+      " #+++++++++#w#++++++#           ",
+      " #+++++++++#w#++++++#           ",
+      " #+++++++++#w#++++++#           ",
+      " #+++++++++#w#++++++#           ",
+      " #+++++++++#w#++++++#           ",
+      " #+++++++++###++++++#wwwwwwwwwww",
+      " #++++++++++++++++++#       l##w",
+      " #++++++++++++++++++#        l#w",
+      " #[+++++++]###++++++#wwww     lw",
+      "w##[+++++]##w#++++++#w         w",
+      "ww###+++###ww#++++++#w     ++++w",
+      "w##{+++++}##w#++++++#w     ++++w",
+      "w#{+++++++}#w#++++++#w     ++++w",
+      "w#+++++++++#w#++++++#w     ++++w",
+      "w#+++++++++#w#++++++#w         w",
+      "w#+++++++++#w#++++++#w         w",
+      "w#+++++++++#w#++++++#w++++     w",
+      "w#+++++++++#w#++++++#w++++     w",
+      "w#+++++++++#w#++++++#w++++     w",
+      "w#+++++++++#w#++++++#w++++     w",
+      "w#+++++++++#w#++++++#w         w",
+      "w#[+++++++]#w#++++++#w         w",
+      "w##[+++++]##w#++++++#w     ++++w",
+      "ww###+++###ww#++++++#w     ++++w",
+      "w##{+++++}##w#++++++#w     ++++w",
+      "w#{+++++++}#w#++++++#w     ++++w",
+      "w#+++++++++#w#++++++###########w",
+      "w#+++++++++#w#+++++++GGGGGG####w",
+      "w#+++++++++#w#+++++++GGGGGG####w",
+      "w#+++++++++#w#+++++++GGGGGG####w",
+      "w#++++S++++#w#+++++++GGGGGG####w",
+      "w#[+++++++]#w#+++++++GGGGGG####w",
+      "w##[+++++]##w#[++++++GGGGGG####w",
+      "wl#########rwl##############wwww",
+      "wwwwwwwwwwwww"],
+    stars:[420,360,264,228]
   },
   {
-    title:"A horrible level",
+    title:"Horrible",
     grid:[
-  "                              ",
-  "                     w+ +     ",
-  "                     w        ",
-  "          w    w  +       +   ",
-  "             w    w  w+       ",
-  "      + w      +     w        ",
-  "       w         w   w     +  ",
-  "   +    +  +         w        ",
-  "                     w        ",
-  "      +   w +   w    w        ",
-  "   +   w             w    +   ",
-  "w   w     +   +      w        ",
-  "                   w w        ",
-  "   +   +       w w   w        ",
-  "  w  +     +  w+     w        ",
-  "                     w     +  ",
-  "   w w  w + w    w   w +      ",
-  " w            +      w        ",
-  "     ++    ++      + w        ",
-  "      + w    ++  w   w      + ",
-  "       +  +    +   + w        ",
-  "  +  +      ++ w     w        ",
-  " w  w ww  w  +       w +      ",
-  "         +  w  w     w        ",
-  "               +     w        ",
-  "    +   +    w       w        ",
-  "     w    +          w        ",
-  "     +     wwww      w      + ",
-  "             S       w        ",
-  "         +           w  G     ",
-]
+  "                     w+ +    ",
+  "                     w       ",
+  "          w    w  +       +  ",
+  "             w    w  w+      ",
+  "      + w      +     w       ",
+  "       w         w   w     + ",
+  "   +    +  +         w       ",
+  "                     w       ",
+  "      +   w +   w    w       ",
+  "   +   w             w    +  ",
+  "w   w     +   +      w       ",
+  "                   w w       ",
+  "   +   +       w w   w       ",
+  "  w  +     +  w+     w       ",
+  "                     w     + ",
+  "   w w  w + w    w   w +     ",
+  " w            +      w       ",
+  "     ++    ++      + w       ",
+  "      + w    ++  w   w      +",
+  "       +  +    +   + w       ",
+  "  +  +      ++ w     w       ",
+  " w  w ww  w  +       w +     ",
+  "         +  w  w     w       ",
+  "               +     w       ",
+  "    +   +    w       w       ",
+  "     w    +          w       ",
+  "     +     wwww      w      +",
+  "             S       w       ",
+  "         +           w  G    ",
+],
+    stars:[7000,1000,120,60]
   },
   {
     title:"Mandelbrot",
     grid:[
-      "                                        ",
-      "                                        ",
-      "               # ++   ++ #              ",
-      "            + wwwww[ ]wwwww +           ",
-      "           +#w#####w+w#####w#+          ",
-      "            w###############w           ",
-      "          +w#################w+         ",
-      "          +w#################w+         ",
-      "     [  +  w#################w  +  ]    ",
-      "       +ww+w#################w+ww+      ",
-      "     + w##ww#################ww##w +    ",
-      "        ww+w#################w+ww       ",
-      "           w#################w          ",
-      "           w#################w          ",
-      "           +w###############w+          ",
-      "           +w###############w+          ",
-      "          +##w#############w##+         ",
-      "          +  +w###########w+  +         ",
-      "             + wwwwwGwwwww +            ",
-      "                 +##w##+                ",
-      "                  #www#                 ",
-      "                +]w###w[+               ",
-      "                +w#####w+               ",
-      "                #w#####w#               ",
-      "                +w#####w+               ",
-      "                ]#w###w#[               ",
-      "                 +#www#+                ",
-      "                  +}w{+                 ",
-      "                   +#+                  ",
-      "                    #                   ",
-      "                    #                   ",
-      "                    #                   ",
-      "                    +                   ",
-      "                    +                   ",
-      "                   l#r                  ",
-      "                    +                   ",
-      "                    +                   ",
-      "                    S                   ",
-      "                    +                   "]
+      "               # ++   ++ #     ",
+      "            + wwwww[ ]wwwww +  ",
+      "           +#w#####w+w#####w#+ ",
+      "            w###############w  ",
+      "          +w#################w+",
+      "          +w#################w+",
+      "     [  +  w#################w  +  ]",
+      "       +ww+w#################w+ww+  ",
+      "     + w##ww#################ww##w +",
+      "        ww+w#################w+ww   ",
+      "           w#################w  ",
+      "           w#################w  ",
+      "           +w###############w+  ",
+      "           +w###############w+  ",
+      "          +##w#############w##+ ",
+      "          +  +w###########w+  + ",
+      "             + wwwwwGwwwww +    ",
+      "                 +##w##+ ",
+      "                  #www#  ",
+      "                +]w###w[+",
+      "                +w#####w+",
+      "                #w#####w#",
+      "                +w#####w+",
+      "                ]#w###w#[",
+      "                 +#www#+ ",
+      "                  +}w{+  ",
+      "                   +#+",
+      "                    # ",
+      "                    # ",
+      "                    # ",
+      "                    + ",
+      "                    + ",
+      "                   l#r",
+      "                    + ",
+      "                    + ",
+      "                    S ",
+      "                    + "],
+    stars:[1920,1440,960,600]
   },
   {
     title:"Test map",
     grid:[
-      "                                    ",
-      "     ,##################.           ",
-      "     #{++++++++++++++++}#           ",
-      "     #++++++++++++++++++#           ",
-      "     #++++++++++++++++++#           ",
-      "     #++++++++++++++++++#           ",
-      "     #+++++++++]#[++++++#           ",
-      "     #+++++++++###++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++#w#++++++#           ",
-      "     #+++++++++###++++++#           ",
-      "     #++++++++++++++++++#           ",
-      "     #++++++++++++++++++#           ",
-      "     #[+++++++]###++++++#           ",
-      "    ww###+++###ww#++++++#           ",
-      "    w#{+++++++}#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#[+++++++]#w#++++++#           ",
-      "    ww###+++###ww#++++++#           ",
-      "    w#{+++++++}#w#++++++#           ",
-      "    w#+++++++++#w#++++++#           ",
-      "    w#+++++++++#w#++++++########    ",
-      "    w#+++++++++#w#+++++++GGGGGG#    ",
-      "    w#+++++++++#w#+++++++GGGGGG#    ",
-      "    w#+++++++++#w#+++++++GGGGGG#    ",
-      "    w#++++S++++#w#+++++++GGGGGG#    ",
-      "    w#+++++++++#w#+++++++GGGGGG#    ",
-      "    w#[+++++++]#w#[++++++GGGGGG#    ",
-      "    wl#########rwl##############    ",
-      "    wwwwwwwwwwwww                   ",
-      "                                    "]
+      " ,##################.",
+      " #{++++++++++++++++}#",
+      " #++++++++++++++++++#",
+      " #++++++++++++++++++#",
+      " #++++++++++++++++++#",
+      " #+++++++++]#[++++++#",
+      " #+++++++++###++++++#",
+      " #+++++++++#w#++++++#",
+      " #+++++++++#w#++++++#",
+      " #+++++++++#w#++++++#",
+      " #+++++++++#w#++++++#",
+      " #+++++++++#w#++++++#",
+      " #+++++++++#w#++++++#",
+      " #+++++++++#w#++++++#",
+      " #+++++++++###++++++#",
+      " #++++++++++++++++++#",
+      " #++++++++++++++++++#",
+      " #[+++++++]###++++++#",
+      "ww###+++###ww#++++++#",
+      "w#{+++++++}#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#[+++++++]#w#++++++#",
+      "ww###+++###ww#++++++#",
+      "w#{+++++++}#w#++++++#",
+      "w#+++++++++#w#++++++#",
+      "w#+++++++++#w#++++++########",
+      "w#+++++++++#w#+++++++GGGGGG#",
+      "w#+++++++++#w#+++++++GGGGGG#",
+      "w#+++++++++#w#+++++++GGGGGG#",
+      "w#++++S++++#w#+++++++GGGGGG#",
+      "w#+++++++++#w#+++++++GGGGGG#",
+      "w#[+++++++]#w#[++++++GGGGGG#",
+      "wl#########rwl##############",
+      "wwwwwwwwwwwww"],
+    stars:[420,360,264,228]
   },
   {
     title: "Bemazed",
     grid: [
-        "                                     ",
         "             ########################",
         "             #++++++++++++++++GGGG++#",
         "             #++++++++++++++++GGGG++#",
@@ -233,47 +229,49 @@ const gameMaps=[
         "w++          w  ##wwww  w            ",
         "w++++        w  ##      w            ",
         "wS+++        w  ##      w            ",
-        "wwwwwwwwwwwwwwwwwwwwwwwww            ",
-        "                                     "]
+        "wwwwwwwwwwwwwwwwwwwwwwwww            "],
+    stars:[960,720,420,312]
   },
   {
-      title: "Square Off",
-      grid: [
-          "                          ",
-          " wwwwww+wwwwwwwwwwwwwwwww ",
-          " w++++++##       ##   ++w ",
-          " w++++++##       ##   ++w ",
-          " w++wwwwww            ++w ",
-          " w++     w            ++w ",
-          " w++     wwwww  www   ++w ",
-          " wwwwww  w      w     ++w ",
-          " w++     w      w     ++w ",
-          " w[+     w##wwwww  www++w ",
-          " ww[     ###w         ++w ",
-          " www.    ###w         ++w ",
-          " wwww.   wwww   wwwwww++w ",
-          " wwwww.  w   +++w     ++w ",
-          " wwwww{  w   +++w     ++w ",
-          " wwww{+  w   +++w     ++w ",
-          " www{++ ww  wwwww     ++w ",
-          " ww{++]www  #GGG#     ++w ",
-          " w{++]www   #GGG#     ++w ",
-          " #++]www    #GGG#     ++w ",
-          " #S]www     #GGG#     ++w ",
-          " #]www      #GGG#     ++w ",
-          " #www+++++++++++++++++++w ",
-          " www++++++++++++++++++++w ",
-          " wwwwwwwwwwwwwwwwwwwwwwww ",
-          "                          "]
-    }
+    title: "Square Off",
+    grid: [
+        "wwwwww+wwwwwwwwwwwwwwwww",
+        "w++++++##       ##   ++w",
+        "w++++++##       ##   ++w",
+        "w++wwwwww            ++w",
+        "w++     w            ++w",
+        "w++     wwwww  www   ++w",
+        "wwwwww  w      w     ++w",
+        "w++     w      w     ++w",
+        "w[+     w##wwwww  www++w",
+        "ww[     ###w         ++w",
+        "www.    ###w         ++w",
+        "wwww.   wwww   wwwwww++w",
+        "wwwww.  w   +++w     ++w",
+        "wwwww{  w   +++w     ++w",
+        "wwww{+  w   +++w     ++w",
+        "www{++ ww  wwwww     ++w",
+        "ww{++]www  #GGG#     ++w",
+        "w{++]www   #GGG#     ++w",
+        "#++]www    #GGG#     ++w",
+        "#S]www     #GGG#     ++w",
+        "#]www      #GGG#     ++w",
+        "#www+++++++++++++++++++w",
+        "www++++++++++++++++++++w",
+        "wwwwwwwwwwwwwwwwwwwwwwww"],
+    stars:[1200,900,720,600]
+  }
 ];
 
 let save={
-  version:0.1,
-  mapTimes:{}
+  version:0.2,
+  mapTimes:{},
+  replays:{},
+  name:""
 };
 for(let m in gameMaps){
   save.mapTimes[gameMaps[m].title]=0;
+  save.replays[gameMaps[m].title]=0;
 }
 
 function setCookie() {
@@ -281,7 +279,6 @@ function setCookie() {
   var expires="expires="+d.toUTCString();
   document.cookie="savedata="+JSON.stringify(save)+";"+expires+";path=/";
 }
-
 function getCookie() {
   var name = "savedata=";
   var decodedCookie = decodeURIComponent(document.cookie);
@@ -297,20 +294,19 @@ function getCookie() {
   }
   return "";
 }
-
 function checkCookie() {
   var data = getCookie();
   if (data != "") {
     try{
       data=JSON.parse(data);
-      if(data.version>0.1){return;}
+      name=data.name;
       for(let m in data.mapTimes){
         save.mapTimes[m]=data.mapTimes[m];
+        save.replays[m]=data.replays[m];
       }
     }catch(e){console.log("Save data invalid");}
   }
 }
-
 checkCookie();
 
 const div={
@@ -340,7 +336,7 @@ const controls={
   restart:82,
   nextLevel:13,
   nextLevel2:10,
-  skipLevel:83
+  pause:8
 };
 const controlTypes = Object.keys(controls);
 /*
@@ -857,8 +853,8 @@ function playerCollision(i,j){
 }
 
 function getGround(x,y){
-  let X=x+0.5>>0;
-  let Y=y+0.5>>0;
+  let X=Math.floor(x+0.5);
+  let Y=Math.floor(y+0.5);
   if(X<0||Y<0||Y>=currentMap.grid.length||X>=currentMap.grid[Y].length){
     return -100;
   }
@@ -913,17 +909,19 @@ function stepPlayer() {
       //Read the keys
       let controlState = replay.controlState[frame];
       [...controlState.keys()].forEach(index => keys[controls[controlTypes[index]]] = controlState[index]);
-    } else {
+    }
+    else {
       //Otherwise keep the keys as they are
     }
-
-  } else {
+  }
+  else {
     let controlState = controlTypes.map(controlType => controls[controlType]).map(controlKey => keys[controlKey]);
     //If we just started the game, then track the first frame of input
     if (frame === 0) {
       lastInputChangeFrame = frame;
       replay.controlState[lastInputChangeFrame] = controlState;
-    } else {
+    }
+    else {
       let lastControlState = replay.controlState[lastInputChangeFrame];
       let inputChanged = !([...Array(controlTypes.length).keys()].every(index => controlState[index] === lastControlState[index]));
       if (inputChanged) {
@@ -1098,6 +1096,31 @@ function stepPlayer() {
 
 }
 
+
+function drawStar(x,y,s,time,stars){
+  fill(30);
+  if(time===0){}
+  else if(time<=stars[3]){
+    fill(230, 115, 215);
+  }
+  else if(time<=stars[2]){
+    fill(255, 215, 0);
+  }
+  else if(time<=stars[1]){
+    fill(192);
+  }
+  else if(time<=stars[0]){
+    fill(205, 127, 50);
+  }
+
+  beginShape();
+  for(let i=0;i<TWO_PI;i+=TWO_PI/5){
+    vertex(x+s/2*sin(i),y+s/2*cos(i));
+    vertex(x+s*sin(i+TWO_PI/10),y+s*cos(i+TWO_PI/10));
+  }
+  endShape();
+}
+
 function run(){
     if(!finish){
       if(targetFPS<50){
@@ -1198,8 +1221,10 @@ function performanceMode(val){
   }
 }
 
-function drawMap(){
-  run();
+function drawMap(paused){
+  if(!paused){
+    run();
+  }
   tileSize=min(width/16,height/16);
 
   if(finish){
@@ -1231,8 +1256,6 @@ function drawMap(){
       translate(-camera.x*tileSize,-camera.y*tileSize,-(player.z-1)*tileSize*ZMAG);
     }
     translate(0,0,-(camera.z-2)*tileSize*ZMAG*(1-finishTransition));
-
-    noStroke();
 
   for(let i=0;i<currentMap.grid.length;i++){
     for(let j=0;j<currentMap.grid[i].length;j++){
@@ -1295,7 +1318,6 @@ function drawMap(){
   ortho();
   resetMatrix();
 
-
   if(mouseIn){
     fps.push(frameRate());
   }
@@ -1329,34 +1351,178 @@ function drawMap(){
     text((save.mapTimes[currentMap.title]/120/60>>0)+":"+(""+(save.mapTimes[currentMap.title]/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(save.mapTimes[currentMap.title]%120)/120>>0)).padStart(3,'0'),0,95-height/2);
   }
 
+  if(finish){
+    drawStar(-width/4,0,width/6,timer,currentMap.stars);
+  }
+
+  let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
+  perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
+}
+
+let state="level select";
+let selectedLevel=0;
+
+function levelBox(lvl,x,y,w,h,n){
+  if(n===selectedLevel){
+    fill(255);
+    rect(x-2,y-2,w+4,h+4);
+  }
+  fill(50);
+  rect(x,y,w,h);
+  fill(255);
+  textSize(h/4);
+  text(lvl.title,x+w*1/3,y+h*1/6,w*2/3,h/2);
+  fill(0);
+  ellipse(x+w/6,y+h/2,h*2/3,h*2/3);
+
+  if(save.mapTimes[lvl.title]){
+    fill(255);
+    textSize(h/5);
+    text((save.mapTimes[lvl.title]/120/60>>0)+":"+(""+(save.mapTimes[lvl.title]/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(save.mapTimes[lvl.title]%120)/120>>0)).padStart(3,'0'),x+w*1/3,y+h*3/5,w*2/3,h*1/3);
+  }
+  else{
+    fill(255);
+    textSize(h/5);
+    text("N/A",x+w*1/3,y+h*3/5,w*2/3,h*1/3);
+  }
+
+  drawStar(x+w/6,y+h/2,h/3,save.mapTimes[lvl.title],lvl.stars);
+
+  if(n>0 && (save.mapTimes[gameMaps[n-1].title] === 0 || save.mapTimes[gameMaps[n-1].title]>gameMaps[n-1].stars[0] ) ){
+    fill(0,100);
+    rect(x,y,w,h);
+  }
+}
+
+function levelSelect(){
+  if((keys[controls.nextLevel] || keys[controls.nextLevel2]) && (selectedLevel===0 || (save.mapTimes[gameMaps[selectedLevel-1].title] && save.mapTimes[gameMaps[selectedLevel-1].title]<=gameMaps[selectedLevel-1].stars[0]))){
+    keys[controls.nextLevel]=false;
+    keys[controls.nextLevel2]=false;
+    setupLevel(selectedLevel);
+    state="game";
+  }
+  if(keys[controls.right]){
+    keys[controls.right]=false;
+    selectedLevel++;
+  }
+  if(keys[controls.left]){
+    keys[controls.left]=false;
+    selectedLevel--;
+  }
+  if(keys[controls.down]){
+    keys[controls.down]=false;
+    selectedLevel+=4;
+  }
+  if(keys[controls.up]){
+    keys[controls.up]=false;
+    selectedLevel-=4;
+  }
+  if(selectedLevel<0){selectedLevel=0;}
+  if(selectedLevel>=gameMaps.length){selectedLevel=gameMaps.length-1;}
+
+  if(save.name===""){
+    save.name=prompt("What would you like to be called?");
+  }
+  ortho();
+  resetMatrix();
+  textAlign(LEFT,CENTER);
+  for(let i=0;i<gameMaps.length;i++){
+    levelBox(gameMaps[i],i%4*width/4-width/2+2,
+      (i/4>>0)*width/10-height/2+2,
+      width/4-4,
+      width/10-4,i);
+  }
+  let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
+  perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
+}
+
+let menuOption=0;
+function pausedGame(){
+  drawMap(true);
+
+  ortho();
+  resetMatrix();
+  fill(255,200);
+  rect(-width/6,-width/16,width/3,width/8);
+
+  fill(230);
+  if(menuOption){
+    rect(-width/6,width/64,width/6,width/64*3);
+  }
+  else{
+    rect(0,width/64,width/6,width/64*3);
+  }
+  noStroke();
+
+  fill(0);
+  textAlign(CENTER,CENTER);
+  textSize(width/40);
+  text("Quit to\nlevel select?",0,-width/32);
+  text("YES",-width/12,width/28);
+  text("NO",width/12,width/28);
+
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
 function draw() {
+  noStroke();
   if(can){
     document.getElementById('defaultCanvas0').addEventListener('mouseover',mOver);
     document.getElementById('defaultCanvas0').addEventListener('mouseout',mOut);
     can=null;
   }
   background(0);
-  drawMap();
+  switch(state){
+    case('game'):drawMap();break;
+    case('level select'):levelSelect();break;
+    case('paused'):pausedGame();break;
+  }
 }
 
 function keyPressed() {
-  if(keyCode == controls.restart){
-    setupLevel(onLevel,true);
-    return;
-  }
-  //For now, we don't let the player do anything during playback
-  if (playback) {
-    return;
-  }
-  if(keyCode == controls.skipLevel ||((keyCode == controls.nextLevel ||keyCode == controls.nextLevel2) && finish)){
-    onLevel=(onLevel+1)%gameMaps.length;
-    currentMap=gameMaps[onLevel];
-    setupLevel(onLevel);
-    return;
+  switch(state){
+    case('paused'):
+      if(keyCode == controls.left || keyCode == controls.right){
+        menuOption=!menuOption;
+        return;
+      }
+      if(keyCode == controls.nextLevel || keyCode == controls.nextLevel2){
+        if(menuOption){
+          state='level select';
+        }
+        else{
+          state='game';
+        }
+        return;
+      }
+    break;
+    case('game'):
+      if(keyCode == controls.restart){
+        setupLevel(onLevel,true);
+        return;
+      }
+      if(keyCode == controls.pause){
+        state='paused';
+        menuOption=0;
+        return;
+      }
+      //For now, we don't let the player do anything during playback
+      if (playback) {
+        return;
+      }
+      if( (keyCode == controls.nextLevel || keyCode == controls.nextLevel2) && finish ){
+        if(timer>currentMap.stars[0]){
+          setupLevel(onLevel,true);
+        }
+        else{
+          onLevel=(onLevel+1)%gameMaps.length;
+          currentMap=gameMaps[onLevel];
+          setupLevel(onLevel);
+        }
+        return;
+      }
+    break;
   }
   keys[keyCode]=true;
 }

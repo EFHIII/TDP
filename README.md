@@ -14,9 +14,9 @@ To play, go [here](https://efhiii.github.io/TDP)
 
 `R` - restart level
 
-`S` - skip level
-
 `ENTER` - continue to next level (after finishing a level)
+
+`BACKSPACE` - pause level
 
 # FAQ
 ***It's really laggy, how do I fix this?***
