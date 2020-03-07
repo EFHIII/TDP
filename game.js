@@ -309,10 +309,17 @@ function checkCookie() {
         save.mapTimes[m]=data.mapTimes[m];
         save.replays[m]=data.replays[m];
       }
-      controls=data.controls;
-      controlsSettings=data.controlsSettings;
       while(levelSelected<gameMaps.length-1 && save.mapTimes[gameMaps[levelSelected].title]>0){
         levelSelected++;
+      }
+      uiScroll=levelSelected/4>>0;
+      if(data.hasOwnProperty('controls')){
+        for(con in data.controls){
+          controls[con]=data.controls[con];
+          controlsSettings[controlsSettings.map(function(a){return a[0];}).indexOf(con)]=data.controlsSettings[data.controlsSettings.map(function(a){return a[0];}).indexOf(con)];
+        }
+        controls=data.controls;
+        controlsSettings=data.controlsSettings;
       }
     }
     catch(e){console.log(e);console.log("Save data invalid");}
@@ -1874,6 +1881,7 @@ function keyPressed() {
         if(menuOption){
           state='level select';
           levelSelected=onLevel;
+          uiScroll=levelSelected/4>>0;
         }
         else{
           state='game';
