@@ -304,7 +304,7 @@ function checkCookie() {
     try{
       data=JSON.parse(data);
       save.name=data.name;
-      settingsObjects[0].name="Change name - "+save.name;
+      settingsObjects[0].value=save.name;
       for(let m in data.mapTimes){
         save.mapTimes[m]=data.mapTimes[m];
         save.replays[m]=data.replays[m];
@@ -1543,8 +1543,9 @@ function setControls(){
 
 let settingsObjects=[
   {
-    name:"Change name - N/A",
+    name:"Change name",
     type:"action",
+    value:"N/A",
     run:function(){
       save.name="";
       while(save.name===""){
@@ -1558,7 +1559,7 @@ let settingsObjects=[
           save.name='';
         }
       }
-      settingsObjects[0].name="Change name - "+save.name;
+      settingsObjects[0].value=save.name;
     }
   },
   {
@@ -1624,10 +1625,11 @@ function settingsBox(id,x,y,w,h){
   textAlign(CENTER,CENTER);
   switch(setting.type){
     case("action"):
-      text(setting.name,x,y,w,h-h/12);
+      text(setting.name,x+h/12,y,w/3,h-h/12);
+      text(setting.value,x+w/3+h/12,y,w*2/3,h-h/12);
     break;
     case("toggle"):
-      text(setting.name,x,y,w/2,h-h/12);
+      text(setting.name,x+h/12,y,w/3,h-h/12);
       rect(x+w*2/3-h/3,y+h/6,h*2/3,h*2/3);
       fill(id===settingSelected?30:10);
       rect(x+w*2/3-h/3+2,y+h/6+2,h*2/3-4,h*2/3-4);
@@ -1637,14 +1639,14 @@ function settingsBox(id,x,y,w,h){
       }
     break;
     case("choice"):
-      text(setting.name,x,y,w/3,h-h/12);
+      text(setting.name,x+h/12,y,w/3,h-h/12);
       for(let i=0;i<setting.choices.length;i++){
         if(setting.value===i){
           fill(60);
           rect(x+w/3+i*w*2/3/setting.choices.length,y,w*2/3/setting.choices.length,h);
           fill(255);
         }
-        text(setting.choices[i].name,x+w/3+i*w*2/3/setting.choices.length,y,w*2/3/setting.choices.length,h-h/12);
+        text(setting.choices[i].name,x+w/3+i*w*2/3/setting.choices.length+h/12,y,w*2/3/setting.choices.length,h-h/12);
       }
     break;
   }
@@ -1791,7 +1793,7 @@ function levelSelect(){
         save.name='';
       }
     }
-    settingsObjects[0].name="Change name - "+save.name;
+    settingsObjects[0].value=save.name;
   }
   ortho();
   resetMatrix();
