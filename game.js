@@ -315,7 +315,7 @@ function checkCookie() {
         levelSelected++;
       }
     }
-    catch(e){console.log("Save data invalid");}
+    catch(e){console.log(e);console.log("Save data invalid");}
   }
 }
 
@@ -332,7 +332,7 @@ let lastInputChangeFrame = 0;
 let frame = 0;
 let replayControlState = [];
 let playback = false;
-const controls={
+let controls={
   up:38,
   down:40,
   left:37,
@@ -346,7 +346,7 @@ const controls={
   pause:8
 };
 
-const controlsSettings=[
+let controlsSettings=[
   ['up','Up','Arrow Up'],
   ['down','Down','Arrow Down'],
   ['left','Left','Arrow Left'],
