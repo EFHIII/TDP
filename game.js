@@ -264,9 +264,11 @@ const gameMaps=[
 ];
 
 let save={
-  version:0.2,
+  version:0.3,
   mapTimes:{},
   replays:{},
+  controls:{},
+  controlsSettings:[],
   name:""
 };
 for(let m in gameMaps){
@@ -275,6 +277,8 @@ for(let m in gameMaps){
 }
 
 function setCookie() {
+  save.controls=controls;
+  save.controlsSettings=controlsSettings;
   var d = new Date("Mar 14 159265 3:58:97");
   var expires="expires="+d.toUTCString();
   document.cookie="savedata="+JSON.stringify(save)+";"+expires+";path=/";
@@ -299,15 +303,20 @@ function checkCookie() {
   if (data != "") {
     try{
       data=JSON.parse(data);
-      name=data.name;
+      save.name=data.name;
       for(let m in data.mapTimes){
         save.mapTimes[m]=data.mapTimes[m];
         save.replays[m]=data.replays[m];
       }
-    }catch(e){console.log("Save data invalid");}
+      controls=data.controls;
+      controlsSettings=data.controlsSettings;
+      while(levelSelected<gameMaps.length-1 && save.mapTimes[gameMaps[levelSelected].title]>0){
+        levelSelected++;
+      }
+    }
+    catch(e){console.log("Save data invalid");}
   }
 }
-checkCookie();
 
 const div={
   floor:[],
@@ -338,6 +347,19 @@ const controls={
   nextLevel2:10,
   pause:8
 };
+
+const controlsSettings=[
+  ['up','Up','Arrow Up'],
+  ['down','Down','Arrow Down'],
+  ['left','Left','Arrow Left'],
+  ['right','Right','Arrow Right'],
+  ['jump','Jump','Space'],
+  ['spin','Charged Boost','Z'],
+  ['blink','Cooldown Boost','X'],
+  ['restart','Restart Level','R'],
+  ['nextLevel','UI Select / Next Level','Enter'],
+  ['pause','Pause','Backspace'],
+];
 const controlTypes = Object.keys(controls);
 /*
   up:87,
@@ -375,6 +397,7 @@ const player={
 };
 
 let targetFPS=60;
+let showFPS=false;
 
 let onLevel=0;
 
@@ -1100,8 +1123,14 @@ function stepPlayer() {
 function drawStar(x,y,s,time,stars){
   fill(30);
   if(time===0){}
-  else if(time<=stars[3]){
+  else if(time===-1){
+    fill(230, 115, 215,100);
+  }
+  else if(time===-2){
     fill(230, 115, 215);
+  }
+  else if(time<=stars[3]){
+    fill(200, 50, 180);
   }
   else if(time<=stars[2]){
     fill(255, 215, 0);
@@ -1110,7 +1139,7 @@ function drawStar(x,y,s,time,stars){
     fill(192);
   }
   else if(time<=stars[0]){
-    fill(205, 127, 50);
+    fill(170, 70, 30);
   }
 
   beginShape();
@@ -1119,6 +1148,37 @@ function drawStar(x,y,s,time,stars){
     vertex(x+s*sin(i+TWO_PI/10),y+s*cos(i+TWO_PI/10));
   }
   endShape();
+  if(time && time<=stars[3]){
+      drawStar(x,y,s*1.3,-1,[-10,-10,-10,-10]);
+      drawStar(x,y,s*0.8,-2,[-10,-10,-10,-10]);
+  }
+  else if(time && time<=stars[2]){
+    fill(255,255,150);
+    beginShape();
+    vertex(x,y-s);
+    vertex(x+s/2*sin(-TWO_PI/5*2),y+s/2*cos(-TWO_PI/5*2));
+    vertex(x+s*sin(-TWO_PI/10*3),y+s*cos(-TWO_PI/10*3));
+    vertex(x,y);
+    endShape();
+
+    beginShape();
+    vertex(x+s*sin(-TWO_PI/10),y+s*cos(-TWO_PI/10));
+    vertex(x+s/2*sin(-TWO_PI/5),y+s/2*cos(-TWO_PI/5));
+    vertex(x,y);
+    endShape();
+
+    beginShape();
+    vertex(x+s*sin(TWO_PI/10*3),y+s*cos(-TWO_PI/10*3));
+    vertex(x+s/2*sin(TWO_PI/5*2),y+s/2*cos(-TWO_PI/5*2));
+    vertex(x,y);
+    endShape();
+
+    beginShape();
+    vertex(x+s*sin(TWO_PI/10),y+s*cos(-TWO_PI/10));
+    vertex(x+s/2*sin(TWO_PI/5),y+s/2*cos(-TWO_PI/5));
+    vertex(x,y);
+    endShape();
+  }
 }
 
 function run(){
@@ -1127,9 +1187,7 @@ function run(){
         stepPlayer();
         stepPlayer();
       }
-      if(targetFPS<70){
-        stepPlayer();
-      }
+      stepPlayer();
       stepPlayer();
     }
     else{
@@ -1227,22 +1285,24 @@ function drawMap(paused){
   }
   tileSize=min(width/16,height/16);
 
-  if(finish){
-    camera.z+=(player.z-camera.z-3)*0.1;
-    finishTransition+=(1-finishTransition)*0.1;
-  }
-  else if(!startedTime && camera.z>1){
-    camera.z-=0.3-0.3/camera.z;
-    camera.x+=(player.x-camera.x)*0.03;
-    camera.y+=(player.y-camera.y)*0.03;
-  }
-  else{
-    camera.z*=0.95;
-    camera.x+=(player.x-camera.x)*0.3;
-    camera.y+=(player.y-camera.y)*0.3;
-  }
+  for(let i=targetFPS<50?2:1;i>0;i--){
+    if(finish){
+      camera.z+=(player.z-camera.z-3)*0.1;
+      finishTransition+=(1-finishTransition)*0.1;
+    }
+    else if(!startedTime && camera.z>1){
+      camera.z-=0.3-0.3/camera.z;
+      camera.x+=(player.x-camera.x)*0.03;
+      camera.y+=(player.y-camera.y)*0.03;
+    }
+    else{
+      camera.z*=0.95;
+      camera.x+=(player.x-camera.x)*0.3;
+      camera.y+=(player.y-camera.y)*0.3;
+    }
 
-  camera.z+=Math.sqrt((player.vx*player.vx+player.vy*player.vy)*10)*0.005*tileSize;
+    camera.z+=Math.sqrt((player.vx*player.vx+player.vy*player.vy)*10)*0.005*tileSize;
+  }
   let t=HALF_PI/4;
 
   push();
@@ -1318,31 +1378,35 @@ function drawMap(paused){
   ortho();
   resetMatrix();
 
-  if(mouseIn){
-    fps.push(frameRate());
+
+  if(showFPS){
+    if(mouseIn){
+      fps.push(frameRate());
+    }
+
+    if(fps.length>30){
+      fps.shift();
+    }
+
+    let c=0;
+    for(let i=0;i<fps.length;i++){
+      c+=fps[i];
+    }
+    c/=fps.length;
+
+    if(fps.length>=30&&mouseIn&&c>0&&c<minFPS){
+      minFPS=(c*100>>0)/100;
+    }
+
+    fill(0,100);
+    rect(-width/2,-height/2,width,120);
+
+    fill(255);
+    textSize(30);
+    textAlign(LEFT,TOP);
+    text((c>>0)+" FPS\nMIN "+minFPS,-width/2,-height/2);
   }
-
-  if(fps.length>30){
-    fps.shift();
-  }
-
-  let c=0;
-  for(let i=0;i<fps.length;i++){
-    c+=fps[i];
-  }
-  c/=fps.length;
-
-  if(fps.length>=30&&mouseIn&&c>0&&c<minFPS){
-    minFPS=(c*100>>0)/100;
-  }
-
-  fill(0,100);
-  rect(-width/2,-height/2,width,120);
-
-  fill(250);
-  textSize(30);
-  textAlign(LEFT,TOP);
-  text((c>>0)+" FPS\nMIN "+minFPS,-width/2,-height/2);
+  fill(255);
   textSize(40);
   textAlign(CENTER,TOP);
   text((1+onLevel)+"-"+currentMap.title+"\n"+(timer/120/60>>0)+":"+(""+(timer/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(timer%120)/120>>0)).padStart(3,'0'),0,2-height/2);
@@ -1359,15 +1423,303 @@ function drawMap(paused){
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
+let menuSelected=false;
+let menuStates=['level select','controls','settings'];
+let menuState=0;
+
+let uiScroll=0;
+let levelSelected=0;
+let controlSelected=0;
+let settingSelected=0;
+function menuBar(){
+  fill(20);
+  rect(-width/2,-height/2,width,width/15);
+  fill(40);
+  if(menuSelected){
+    let uiSelectors=[levelSelected,controlSelected,settingSelected];
+    if(keys[controls.right]){
+      keys[controls.right]=false;
+      menuState++;
+      if(menuState<0){menuState=2;}
+      if(menuState>2){menuState=0;}
+      uiScroll=menuState?uiSelectors[menuState]:uiSelectors[menuState]/4>>0;
+      if(uiSelectors[menuState]>=0){
+        menuSelected=false;
+      }
+      else{uiScroll=0;}
+    }
+    if(keys[controls.left]){
+      keys[controls.left]=false;
+      menuState--;
+      if(menuState<0){menuState=2;}
+      if(menuState>2){menuState=0;}
+      uiScroll=menuState?uiSelectors[menuState]:uiSelectors[menuState]/4>>0;
+      if(uiSelectors[menuState]>=0){
+        menuSelected=false;
+      }
+      else{uiScroll=0;}
+    }
+    if(keys[controls.down]){
+      keys[controls.down]=false;
+      menuSelected=false;
+    }
+    state=menuStates[menuState];
+    fill(60);
+  }
+  rect(-width/2+width/3*menuState,-height/2,width/3,width/15);
+  fill(255);
+  textSize(width/25);
+  textAlign(CENTER,CENTER);
+  text("Levels",-width/2+width/6,-height/2+width/40);
+  text("Controls",-width/2+width/2,-height/2+width/40);
+  text("Settings",width/2-width/6,-height/2+width/40);
+}
+
 let state="level select";
-let selectedLevel=0;
+
+let settingControl=false;
+function controlsBox(control,x,y,w,h){
+  fill(10);
+  if(control===controlSelected){
+    fill(30);
+  }
+  rect(x+2,y+2,w-4,h-4);
+  fill(255);
+  textAlign(CENTER,CENTER);
+  textSize(h/3);
+  text(controlsSettings[control][1],x,y,w/3,h);
+  text(controlsSettings[control][2],x+w*2/3,y,w/3,h);
+}
+
+function setControls(){
+  if(!menuSelected){
+    if(controlSelected<0){controlSelected=0;}
+    if(keys[controls.left] || keys[controls.right]){
+      menuSelected=true;
+    }
+    if(keys[controls.down]){
+      keys[controls.down]=false;
+      controlSelected++;
+    }
+    if(keys[controls.up]){
+      keys[controls.up]=false;
+      controlSelected--;
+    }
+    if(controlSelected<0){menuSelected=true;}
+    if(controlSelected>=controlsSettings.length){controlSelected=controlsSettings.length-1;}
+    if((keys[controls.nextLevel] || keys[controls.nextLevel2]) && controlSelected>=0 ){
+      keys[controls.nextLevel]=false;
+      keys[controls.nextLevel2]=false;
+      settingControl=controlSelected;
+    }
+  }
+
+  for(let i=targetFPS<50?2:1;i>0;i--){
+    if(controlSelected>=0){
+      uiScroll+=(controlSelected-uiScroll)*0.05;
+    }
+    else{
+      uiScroll+=-uiScroll*0.05;
+    }
+  }
+  ortho();
+  resetMatrix();
+  push();
+  translate(0,height/2-uiScroll*width/20-width/20+width/30);
+  for(let i=0;i<controlsSettings.length;i++){
+    controlsBox(i,-width/2+width/4,
+      i*width/20-height/2,
+      width/2,
+      width/20,i);
+  }
+  pop();
+  menuBar();
+  if(settingControl!==false){
+    fill(50);
+    rect(-width/3,-width/6,width*2/3,width/3);
+    fill(255);
+    textSize(width/20);
+    textAlign(CENTER,CENTER);
+    text("Press a key to set for\n"+controlsSettings[settingControl][1],-width/3,-width/6,width*2/3,width/3-width/20);
+  }
+  let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
+  perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
+}
+
+let settingsObjects=[
+  {
+    name:"Change name - N/A",
+    type:"action",
+    run:function(){
+      save.name="";
+      while(save.name===""){
+        save.name=prompt("What would you like to be called?\n(This is what will show on leaderboards)");
+        if(save.name==false||save.name===null){
+          alert("Name can't be blank");
+          save.name='';
+        }
+        else if(save.name.length>12){
+          alert('Name must be 12 characters or less.');
+          save.name='';
+        }
+      }
+      settingsObjects[0].name="Change name - "+save.name;
+    }
+  },
+  {
+    name:"Fullscreen",
+    type:"toggle",
+    value:false,
+    run:function(fs){fullscreen(fs);}
+  },
+  {
+    name:"Show FPS",
+    type:"toggle",
+    value:false,
+    run:function(fs){showFPS=fs;}
+  },
+  {
+    name:"Target Framerate",
+    type:"choice",
+    value:1,
+    choices:[
+      {
+        name:"30",
+        run:function(){targetFPS=30;frameRate(30);}
+      },
+      {
+        name:"60",
+        run:function(){targetFPS=60;frameRate(60);}
+      }
+    ]
+  },
+  {
+    name:"Anit-aliasing",
+    type:"toggle",
+    value:true,
+    run:function(selected){if(selected){smooth();}else{noSmooth();}}
+  },
+  {
+    name:"Trail Length",
+    type:"choice",
+    value:2,
+    choices:[
+      {
+        name:"0",
+        run:function(){player.trailLength=0;}
+      },
+      {
+        name:"64",
+        run:function(){player.trailLength=64;}
+      },
+      {
+        name:"128",
+        run:function(){player.trailLength=128;}
+      }
+    ]
+  },
+];
+
+function settingsBox(id,x,y,w,h){
+  let setting=settingsObjects[id];
+  fill(id===settingSelected?30:10);
+  rect(x+2,y+2,w-4,h-4);
+  fill(255);
+  textSize(h/3);
+  textAlign(CENTER,CENTER);
+  switch(setting.type){
+    case("action"):
+      text(setting.name,x,y,w,h-h/12);
+    break;
+    case("toggle"):
+      text(setting.name,x,y,w/2,h-h/12);
+      rect(x+w*2/3,y+h/6,h*2/3,h*2/3);
+      fill(id===settingSelected?30:10);
+      rect(x+w*2/3+2,y+h/6+2,h*2/3-4,h*2/3-4);
+      if(setting.value){
+        fill(255);
+        rect(x+w*2/3+4,y+h/6+4,h*2/3-8,h*2/3-8);
+      }
+    break;
+    case("choice"):
+      text(setting.name,x,y,w/3,h-h/12);
+      for(let i=0;i<setting.choices.length;i++){
+        if(setting.value===i){
+          fill(60);
+          rect(x+w/3+i*w*2/3/setting.choices.length,y,w*2/3/setting.choices.length,h);
+          fill(255);
+        }
+        text(setting.choices[i].name,x+w/3+i*w*2/3/setting.choices.length,y,w*2/3/setting.choices.length,h-h/12);
+      }
+    break;
+  }
+}
+
+function settings(){
+  if(!menuSelected){
+    if(settingSelected<0){settingSelected=0;}
+    if(keys[controls.left] || keys[controls.right]){
+      menuSelected=true;
+    }
+    if(keys[controls.down]){
+      keys[controls.down]=false;
+      settingSelected++;
+    }
+    if(keys[controls.up]){
+      keys[controls.up]=false;
+      settingSelected--;
+    }
+    if(settingSelected<0){menuSelected=true;}
+    if(settingSelected>=settingsObjects.length){settingSelected=settingsObjects.length-1;}
+    if((keys[controls.nextLevel] || keys[controls.nextLevel2]) && settingSelected>=0 ){
+      console.log(settingSelected);
+      keys[controls.nextLevel]=false;
+      keys[controls.nextLevel2]=false;
+      switch(settingsObjects[settingSelected].type){
+        case("toggle"):
+          settingsObjects[settingSelected].value=!settingsObjects[settingSelected].value;
+            settingsObjects[settingSelected].run(settingsObjects[settingSelected].value);
+          break;
+        case("action"):
+          settingsObjects[settingSelected].run();
+        break;
+        case("choice"):
+          settingsObjects[settingSelected].value=(settingsObjects[settingSelected].value+1)%settingsObjects[settingSelected].choices.length;
+          settingsObjects[settingSelected].choices[settingsObjects[settingSelected].value].run();
+        break;
+      }
+    }
+  }
+
+  for(let i=targetFPS<50?2:1;i>0;i--){
+    if(settingSelected>=0){
+      uiScroll+=(settingSelected-uiScroll)*0.05;
+    }
+    else{
+      uiScroll+=-uiScroll*0.05;
+    }
+  }
+  ortho();
+  resetMatrix();
+  push();
+  translate(0,height/2-uiScroll*width/20-width/20+width/30);
+  for(let i=0;i<settingsObjects.length;i++){
+    settingsBox(i,-width/2+width/4,
+      i*width/20-height/2,
+      width/2,
+      width/20,i);
+  }
+  pop();
+  menuBar();
+  let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
+  perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
+}
 
 function levelBox(lvl,x,y,w,h,n){
-  if(n===selectedLevel){
-    fill(255);
-    rect(x-2,y-2,w+4,h+4);
-  }
   fill(50);
+  if(n===levelSelected){
+    fill(80);
+  }
   rect(x,y,w,h);
   fill(255);
   textSize(h/4);
@@ -1395,36 +1747,65 @@ function levelBox(lvl,x,y,w,h,n){
 }
 
 function levelSelect(){
-  if((keys[controls.nextLevel] || keys[controls.nextLevel2]) && (selectedLevel===0 || (save.mapTimes[gameMaps[selectedLevel-1].title] && save.mapTimes[gameMaps[selectedLevel-1].title]<=gameMaps[selectedLevel-1].stars[0]))){
-    keys[controls.nextLevel]=false;
-    keys[controls.nextLevel2]=false;
-    setupLevel(selectedLevel);
-    state="game";
+  if(!menuSelected){
+    if(levelSelected<0){levelSelected=0;}
+    if((keys[controls.nextLevel] || keys[controls.nextLevel2]) && (levelSelected===0 || (save.mapTimes[gameMaps[levelSelected-1].title] && save.mapTimes[gameMaps[levelSelected-1].title]<=gameMaps[levelSelected-1].stars[0]))){
+      keys[controls.nextLevel]=false;
+      keys[controls.nextLevel2]=false;
+      setupLevel(levelSelected);
+      state="game";
+    }
+    if(keys[controls.right]){
+      if(!((1+levelSelected)%4) || levelSelected === gameMaps.length-1){
+        menuSelected=true;
+      }
+      else{
+        levelSelected++;
+        keys[controls.right]=false;
+      }
+    }
+    if(keys[controls.left]){
+      if(!(levelSelected%4)){
+        menuSelected=true;
+      }
+      else{
+        levelSelected--;
+        keys[controls.left]=false;
+      }
+    }
+    if(keys[controls.down]){
+      keys[controls.down]=false;
+      levelSelected+=4;
+    }
+    if(keys[controls.up]){
+      keys[controls.up]=false;
+      levelSelected-=4;
+    }
+    if(levelSelected<0){levelSelected=-1;menuSelected=true;}
+    if(levelSelected>=gameMaps.length){levelSelected=gameMaps.length-1;}
   }
-  if(keys[controls.right]){
-    keys[controls.right]=false;
-    selectedLevel++;
-  }
-  if(keys[controls.left]){
-    keys[controls.left]=false;
-    selectedLevel--;
-  }
-  if(keys[controls.down]){
-    keys[controls.down]=false;
-    selectedLevel+=4;
-  }
-  if(keys[controls.up]){
-    keys[controls.up]=false;
-    selectedLevel-=4;
-  }
-  if(selectedLevel<0){selectedLevel=0;}
-  if(selectedLevel>=gameMaps.length){selectedLevel=gameMaps.length-1;}
-
   if(save.name===""){
-    save.name=prompt("What would you like to be called?");
+    while(save.name===""){
+      save.name=prompt("What would you like to be called?\n(This is what will show on leaderboards)");
+      if(save.name==false||save.name===null){
+        alert("Name can't be blank");
+        save.name='';
+      }
+      else if(save.name.length>12){
+        alert('Name must be 12 characters or less.');
+        save.name='';
+      }
+    }
+    settingsObjects[0].name="Change name - "+save.name;
   }
   ortho();
   resetMatrix();
+  push();
+
+  for(let i=targetFPS<50?2:1;i>0;i--){
+    uiScroll+=((levelSelected/4>>0)-uiScroll)*0.05;
+  }
+  translate(0,height/2-uiScroll*width/10-width/20+width/30);
   textAlign(LEFT,CENTER);
   for(let i=0;i<gameMaps.length;i++){
     levelBox(gameMaps[i],i%4*width/4-width/2+2,
@@ -1432,6 +1813,8 @@ function levelSelect(){
       width/4-4,
       width/10-4,i);
   }
+  pop();
+  menuBar();
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
@@ -1465,6 +1848,7 @@ function pausedGame(){
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
+checkCookie();
 function draw() {
   noStroke();
   if(can){
@@ -1476,6 +1860,8 @@ function draw() {
   switch(state){
     case('game'):drawMap();break;
     case('level select'):levelSelect();break;
+    case('controls'):setControls();break;
+    case('settings'):settings();break;
     case('paused'):pausedGame();break;
   }
 }
@@ -1490,6 +1876,7 @@ function keyPressed() {
       if(keyCode == controls.nextLevel || keyCode == controls.nextLevel2){
         if(menuOption){
           state='level select';
+          levelSelected=onLevel;
         }
         else{
           state='game';
@@ -1516,10 +1903,29 @@ function keyPressed() {
           setupLevel(onLevel,true);
         }
         else{
-          onLevel=(onLevel+1)%gameMaps.length;
+          onLevel=(onLevel+1);
+          if(onLevel>=gameMaps.length){
+            onLevel--;
+            state="level select";
+          }
           currentMap=gameMaps[onLevel];
           setupLevel(onLevel);
         }
+        return;
+      }
+    break;
+    case('controls'):
+      if(settingControl!==false){
+        for(let i in controls){
+          if(controls[i] === keyCode){
+            settingControl=false;
+            alert("'"+(key.length>1?key.replace(/[\w]([A-Z])/g, function(s) {return s[0]+" "+s[1];}):key===' '?'Space':key.toUpperCase())+"' is already mapped to '"+controlsSettings[controlsSettings.map(function(a){return a[0];}).indexOf(i)][1]+"'");
+            return;
+          }
+        }
+        controls[controlsSettings[settingControl][0]]=keyCode;
+        controlsSettings[settingControl][2]=key.length>1?key.replace(/[\w]([A-Z])/g, function(s) {return s[0]+" "+s[1];}):key===' '?'Space':key.toUpperCase();
+        settingControl=false;
         return;
       }
     break;

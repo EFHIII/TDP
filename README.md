@@ -39,12 +39,6 @@ This is a bit trickier to solve, but you shouldn't assume this to be the problem
 
 ## TODO
 - Main menu
-- level select UI
-- configure settings
-  - remap controls
-  - disable anti-aliasing
-  - full screen
-  - 30/60 FPS
 - game elements
   - checkpoints
   - falling platforms?
