@@ -304,6 +304,7 @@ function checkCookie() {
     try{
       data=JSON.parse(data);
       save.name=data.name;
+      settingsObjects[0].name="Change name - "+save.name;
       for(let m in data.mapTimes){
         save.mapTimes[m]=data.mapTimes[m];
         save.replays[m]=data.replays[m];
