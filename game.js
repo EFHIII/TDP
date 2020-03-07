@@ -330,10 +330,7 @@ let keys = [];
 
 let lastInputChangeFrame = 0;
 let frame = 0;
-let replay = {
-  levelTitle: "",
-  controlState:[]
-};
+let replayControlState = [];
 let playback = false;
 const controls={
   up:38,
@@ -549,10 +546,7 @@ function setupLevel(lvl,restarting){
   lastInputChangeFrame = 0;
   frame=0;
   if (!playback) {
-    replay = {
-      levelTitle: gameMaps[lvl].title,
-      controlState: []
-    };
+    replayControlState = [];
   }
 
   timer=0;
@@ -913,7 +907,7 @@ function getGround(x,y){
           setCookie();
         }
 
-        console.log(JSON.stringify(replay))
+        console.log(JSON.stringify(replayControlState))
       }
       return 0;
     default:
@@ -927,11 +921,11 @@ function stepPlayer() {
 
   //Either we're watching a replay, or we're making one
   if (playback) {
-    if (frame === 0 || replay.controlState[frame]) {
+    if (frame === 0 || replayControlState[frame]) {
       lastInputChangeFrame = frame;
 
       //Read the keys
-      let controlState = replay.controlState[frame];
+      let controlState = replayControlState[frame];
       [...controlState.keys()].forEach(index => keys[controls[controlTypes[index]]] = controlState[index]);
     }
     else {
@@ -943,14 +937,14 @@ function stepPlayer() {
     //If we just started the game, then track the first frame of input
     if (frame === 0) {
       lastInputChangeFrame = frame;
-      replay.controlState[lastInputChangeFrame] = controlState;
+      replayControlState[lastInputChangeFrame] = controlState;
     }
     else {
-      let lastControlState = replay.controlState[lastInputChangeFrame];
+      let lastControlState = replayControlState[lastInputChangeFrame];
       let inputChanged = !([...Array(controlTypes.length).keys()].every(index => controlState[index] === lastControlState[index]));
       if (inputChanged) {
         lastInputChangeFrame = frame;
-        replay.controlState[lastInputChangeFrame] = controlState;
+        replayControlState[lastInputChangeFrame] = controlState;
       }
     }
   }
