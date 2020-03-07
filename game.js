@@ -1589,7 +1589,7 @@ let settingsObjects=[
     ]
   },
   {
-    name:"Anit-aliasing",
+    name:"Anti-aliasing",
     type:"toggle",
     value:true,
     run:function(selected){if(selected){smooth();}else{noSmooth();}}
@@ -1628,12 +1628,12 @@ function settingsBox(id,x,y,w,h){
     break;
     case("toggle"):
       text(setting.name,x,y,w/2,h-h/12);
-      rect(x+w*2/3,y+h/6,h*2/3,h*2/3);
+      rect(x+w*2/3-h/3,y+h/6,h*2/3,h*2/3);
       fill(id===settingSelected?30:10);
-      rect(x+w*2/3+2,y+h/6+2,h*2/3-4,h*2/3-4);
+      rect(x+w*2/3-h/3+2,y+h/6+2,h*2/3-4,h*2/3-4);
       if(setting.value){
         fill(255);
-        rect(x+w*2/3+4,y+h/6+4,h*2/3-8,h*2/3-8);
+        rect(x+w*2/3-h/3+4,y+h/6+4,h*2/3-8,h*2/3-8);
       }
     break;
     case("choice"):
