@@ -1,3 +1,5 @@
+let state="tutorial";
+state="level select";
 const ZMAG=1.5;
 var currentMap;
 const gameMaps=[
@@ -1500,8 +1502,6 @@ function menuBar(){
   text("Settings",width/2-width/6,-height/2+width/40);
 }
 
-let state="tutorial";
-
 let settingControl=false;
 function controlsBox(control,x,y,w,h){
   fill(10);
@@ -1913,7 +1913,12 @@ function tutorial(){
     case(1):
       setupLevel(0);
       drawMap(true);
-      tutorialText("You can move with Arrow keys\n\n↑\n← ↓ →\nMOVE");
+      if(save.name===""){
+        tutorialText("You can move with Arrow keys\n\n↑\n← ↓ →\nMOVE");
+      }
+      else{
+          tutorialText("You can move with "+controlsSettings[0][2]+", "+controlsSettings[2][2]+", "+controlsSettings[1][2]+", and "+controlsSettings[3][2]);
+      }
     break;
     case(2):
       tutorialPause=false;
@@ -1921,7 +1926,12 @@ function tutorial(){
       keys[controls.jump]=false;
       keys[controls.spin]=false;
       drawMap();
-      tutorialText("The objective is to get to the green goal as fast as possible. Try it now.\n\n↑\n← ↓ →\nMOVE",true);
+      if(save.name===""){
+        tutorialText("The objective is to get to the green goal as fast as possible. Try it now.\n\n↑\n← ↓ →\nMOVE",true);
+      }
+      else{
+        tutorialText("The objective is to get to the green goal as fast as possible. Try it now.\n\nMove with "+controlsSettings[0][2]+", "+controlsSettings[2][2]+", "+controlsSettings[1][2]+", and "+controlsSettings[3][2],true);
+      }
       if(finish){
         tutorialTimer++;
         if(tutorialTimer>120){
@@ -1936,7 +1946,7 @@ function tutorial(){
       keys[controls.jump]=false;
       keys[controls.spin]=false;
       drawMap();
-      tutorialText(tutorialMemory+", not bad, not bad. But you can do better.\nHere's a little boost to help you out. Press C to go extra fast for a litte bit, but there's a cooldown so use it sparingly.",true);
+      tutorialText(tutorialMemory+", not bad, not bad. But you can do better.\nHere's a little boost to help you out. Press "+controlsSettings[6][2]+" to go extra fast for a litte bit, but there's a cooldown so use it sparingly.",true);
       if(finish){
         tutorialTimer++;
         if(tutorialTimer>120){
@@ -1956,7 +1966,7 @@ function tutorial(){
       keys[controls.jump]=false;
       keys[controls.spin]=false;
       drawMap();
-      tutorialText("C'mon, you can do better than that. At least get under a second and a half.\n\nPress C to go extra fast for a litte bit",true);
+      tutorialText("C'mon, you can do better than that. At least get under a second and a half.\n\nPress "+controlsSettings[6][2]+" to go extra fast for a litte bit",true);
       if(finish){
         tutorialTimer++;
         if(tutorialTimer>120){
@@ -1984,7 +1994,7 @@ function tutorial(){
       tutorialPause=false;
       keys[controls.spin]=false;
       drawMap();
-      tutorialText("On this level, it looks like you're gonna have to jump.\n\nYou can jump with [ SPACE ]",true);
+      tutorialText("On this level, it looks like you're gonna have to jump.\n\nYou can jump with "+(controlsSettings[4][2]==="Space"?"[ SPACE ]":controlsSettings[4][2]),true);
       if(finish){
         tutorialTimer++;
         if(tutorialTimer>120){
@@ -2003,12 +2013,12 @@ function tutorial(){
     case(7):
       tutorialPause=true;
       drawMap(true);
-      tutorialText("Hmm... still a little slow...\nHere's another boost, you can use it by holding X while in the air. It'll give you a boost in whatever direction you're pointing as soon as you hit something, like the ground or a wall.\nYou can do this before the time starts by jumping in place.");
+      tutorialText("Hmm... still a little slow...\nHere's another boost, you can use it by holding "+controlsSettings[5][2]+" while in the air. It'll give you a boost in whatever direction you're pointing as soon as you hit something, like the ground or a wall.\nYou can do this before the time starts by jumping in place.");
     break;
     case(8):
       tutorialPause=false;
       drawMap();
-      tutorialText("Hold X while in the air to get a boost as soon as you land.",true);
+      tutorialText("Hold "+controlsSettings[5][2]+" while in the air to get a boost as soon as you land.",true);
       if(finish){
         tutorialTimer++;
         if(tutorialTimer>120){
@@ -2026,7 +2036,7 @@ function tutorial(){
     break;
     case(9):
       drawMap();
-      tutorialText("Hold X while in the air to get a boost as soon as you land.\nYou can double jump and do this before the timer starts.\nTry and get at least silver.",true);
+      tutorialText("Hold "+controlsSettings[5][2]+" while in the air to get a boost as soon as you land.\nYou can double jump and do this before the timer starts.\nTry and get at least silver.",true);
       if(finish){
         tutorialTimer++;
         if(tutorialTimer>120){

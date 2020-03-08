@@ -8,9 +8,9 @@ To play, go [here](https://efhiii.github.io/TDP)
 
 `SPACE` - jump / double jump
 
-`Z` - (hold) charged boost (activates when hitting the ground/wall)
+`X` - (hold) charged boost (activates when hitting the ground/wall)
 
-`X` - brief boost (has a cooldown)
+`C` - brief boost (has a cooldown)
 
 `R` - restart level
 
@@ -39,7 +39,6 @@ This is a bit trickier to solve, but you shouldn't assume this to be the problem
 
 ## TODO
 - Main menu
-- proper forced tutorial
 - game elements
   - checkpoints
   - falling platforms?
