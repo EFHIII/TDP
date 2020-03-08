@@ -2,6 +2,7 @@ let state="tutorial";
 //state="level select";
 const ZMAG=1.5;
 var currentMap;
+//game maps
 const gameMaps=[
   {
     title:"C",
@@ -283,6 +284,7 @@ const gameMaps=[
   }
 ];
 
+//default save data
 let save={
   version:0.3,
   mapTimes:{},
@@ -297,6 +299,7 @@ for(let m in gameMaps){
   save.replays[gameMaps[m].title]=0;
 }
 
+//cookie functions
 function setCookie() {
   save.controls=controls;
   save.controlsSettings=controlsSettings;
@@ -351,19 +354,7 @@ function checkCookie() {
   }
 }
 
-const div={
-  floor:[],
-  rail:[],
-  wall:[],
-  goal:[],
-};
-
-let keys = [];
-
-let lastInputChangeFrame = 0;
-let frame = 0;
-let replayControlState = [];
-let playback = false;
+//default controls
 let controls={
   up:38,
   down:40,
@@ -378,6 +369,7 @@ let controls={
   pause:8
 };
 
+//controls names
 let controlsSettings=[
   ['up','Up','Arrow Up'],
   ['down','Down','Arrow Down'],
@@ -392,6 +384,7 @@ let controlsSettings=[
 ];
 const controlTypes = Object.keys(controls);
 
+//settings page information, functions, and default settings
 let settingsObjects=[
   {
     name:"Replay tutorial",
@@ -479,6 +472,21 @@ let settingsObjects=[
   },
 ];
 
+//general global variables
+const div={
+  floor:[],
+  rail:[],
+  wall:[],
+  goal:[],
+};
+
+let keys = [];
+
+let lastInputChangeFrame = 0;
+let frame = 0;
+let replayControlState = [];
+let playback = false;
+
 const camera={
   x:0,
   y:0,
@@ -511,6 +519,7 @@ const player={
 let targetFPS=60;
 let showFPS=false;
 
+//current level
 let onLevel=0;
 
 let timer=0;
@@ -525,6 +534,7 @@ let blinking=0;
 let blinkTimer=false;
 let blinked=false;
 
+//completion states
 let finish=false;
 let finishTransition=0;
 
@@ -536,6 +546,7 @@ let mouseIn=false;
 
 let can;
 
+//initialization functions
 function preload() {
   f = loadFont(
     "https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf"
@@ -543,7 +554,7 @@ function preload() {
 }
 function setup() {
   can=createCanvas(windowWidth, windowHeight, WEBGL);
-  pg = createGraphics(200, 200);
+  pg = createGraphics(200, 200);//used for textures (shadow)
 
   frameRate(60);
 
@@ -551,9 +562,9 @@ function setup() {
 
   textFont(f);
   noSmooth();
-  //performanceMode(true);
 }
 
+//mouse in/out
 function mOver(){
   mouseIn=true;
 }
@@ -561,6 +572,7 @@ function mOut(){
   mouseIn=false;
 }
 
+//map optimization stuff
 function maxFromRow(row) {
     let maxR=0;
     let count=0;
@@ -654,6 +666,7 @@ function rectDivision(chars){
   return rects;
 }
 
+//level initialization
 function setupLevel(lvl,restarting){
   keys[controls.up]=false;
   keys[controls.down]=false;
@@ -717,6 +730,69 @@ function setupLevel(lvl,restarting){
 }
 setupLevel(onLevel);
 
+//star
+function drawStar(x,y,s,time,stars){
+  fill(30);
+  if(time===0){}
+  else if(time===-1){
+    fill(230, 115, 215,100);
+  }
+  else if(time===-2){
+    fill(230, 115, 215);
+  }
+  else if(time<=stars[3]){
+    fill(200, 50, 180);
+  }
+  else if(time<=stars[2]){
+    fill(255, 215, 0);
+  }
+  else if(time<=stars[1]){
+    fill(192);
+  }
+  else if(time<=stars[0]){
+    fill(170, 70, 30);
+  }
+
+  beginShape();
+  for(let i=0;i<TWO_PI;i+=TWO_PI/5){
+    vertex(x+s/2*sin(i),y+s/2*cos(i));
+    vertex(x+s*sin(i+TWO_PI/10),y+s*cos(i+TWO_PI/10));
+  }
+  endShape();
+  if(time && time<=stars[3]){
+      drawStar(x,y,s*1.3,-1,[-10,-10,-10,-10]);
+      drawStar(x,y,s*0.8,-2,[-10,-10,-10,-10]);
+  }
+  else if(time && time<=stars[2]){
+    fill(255,255,150);
+    beginShape();
+    vertex(x,y-s);
+    vertex(x+s/2*sin(-TWO_PI/5*2),y+s/2*cos(-TWO_PI/5*2));
+    vertex(x+s*sin(-TWO_PI/10*3),y+s*cos(-TWO_PI/10*3));
+    vertex(x,y);
+    endShape();
+
+    beginShape();
+    vertex(x+s*sin(-TWO_PI/10),y+s*cos(-TWO_PI/10));
+    vertex(x+s/2*sin(-TWO_PI/5),y+s/2*cos(-TWO_PI/5));
+    vertex(x,y);
+    endShape();
+
+    beginShape();
+    vertex(x+s*sin(TWO_PI/10*3),y+s*cos(-TWO_PI/10*3));
+    vertex(x+s/2*sin(TWO_PI/5*2),y+s/2*cos(-TWO_PI/5*2));
+    vertex(x,y);
+    endShape();
+
+    beginShape();
+    vertex(x+s*sin(TWO_PI/10),y+s*cos(-TWO_PI/10));
+    vertex(x+s/2*sin(TWO_PI/5),y+s/2*cos(-TWO_PI/5));
+    vertex(x,y);
+    endShape();
+  }
+}
+
+//3D  drawing stuff
 var tileSize=0;
 const dirAr=[[0,1],[-1,0],[0,-1],[1,0]];
 function tileShadow(x,y,w,h,z,c,r){
@@ -887,6 +963,7 @@ function shapeIntersect(points,sz,x,y,z,r){
   }
 }
 
+//player stuff
 function playerCollision(i,j){
   // i is X, j is Y for the currentMap.grid
   if(i<0||j<0){return;}
@@ -1262,68 +1339,6 @@ function stepPlayer() {
 
 }
 
-
-function drawStar(x,y,s,time,stars){
-  fill(30);
-  if(time===0){}
-  else if(time===-1){
-    fill(230, 115, 215,100);
-  }
-  else if(time===-2){
-    fill(230, 115, 215);
-  }
-  else if(time<=stars[3]){
-    fill(200, 50, 180);
-  }
-  else if(time<=stars[2]){
-    fill(255, 215, 0);
-  }
-  else if(time<=stars[1]){
-    fill(192);
-  }
-  else if(time<=stars[0]){
-    fill(170, 70, 30);
-  }
-
-  beginShape();
-  for(let i=0;i<TWO_PI;i+=TWO_PI/5){
-    vertex(x+s/2*sin(i),y+s/2*cos(i));
-    vertex(x+s*sin(i+TWO_PI/10),y+s*cos(i+TWO_PI/10));
-  }
-  endShape();
-  if(time && time<=stars[3]){
-      drawStar(x,y,s*1.3,-1,[-10,-10,-10,-10]);
-      drawStar(x,y,s*0.8,-2,[-10,-10,-10,-10]);
-  }
-  else if(time && time<=stars[2]){
-    fill(255,255,150);
-    beginShape();
-    vertex(x,y-s);
-    vertex(x+s/2*sin(-TWO_PI/5*2),y+s/2*cos(-TWO_PI/5*2));
-    vertex(x+s*sin(-TWO_PI/10*3),y+s*cos(-TWO_PI/10*3));
-    vertex(x,y);
-    endShape();
-
-    beginShape();
-    vertex(x+s*sin(-TWO_PI/10),y+s*cos(-TWO_PI/10));
-    vertex(x+s/2*sin(-TWO_PI/5),y+s/2*cos(-TWO_PI/5));
-    vertex(x,y);
-    endShape();
-
-    beginShape();
-    vertex(x+s*sin(TWO_PI/10*3),y+s*cos(-TWO_PI/10*3));
-    vertex(x+s/2*sin(TWO_PI/5*2),y+s/2*cos(-TWO_PI/5*2));
-    vertex(x,y);
-    endShape();
-
-    beginShape();
-    vertex(x+s*sin(TWO_PI/10),y+s*cos(-TWO_PI/10));
-    vertex(x+s/2*sin(TWO_PI/5),y+s/2*cos(-TWO_PI/5));
-    vertex(x,y);
-    endShape();
-  }
-}
-
 function run(){
     if(!finish){
       if(targetFPS<50){
@@ -1422,6 +1437,7 @@ function performanceMode(val){
   }
 }
 
+//game
 function drawMap(paused){
   if(!paused){
     run();
@@ -1566,6 +1582,7 @@ function drawMap(paused){
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
+//menu bar (top)
 let menuSelected=false;
 let menuStates=['level select','controls','settings'];
 let menuState=0;
@@ -1618,6 +1635,7 @@ function menuBar(){
   text("Settings",width/2-width/6,-height/2+width/40);
 }
 
+//controls tab
 let settingControl=false;
 function controlsBox(control,x,y,w,h){
   fill(10);
@@ -1631,7 +1649,6 @@ function controlsBox(control,x,y,w,h){
   text(controlsSettings[control][1],x,y,w/2,h);
   text(controlsSettings[control][2],x+w*2/3,y,w/3,h);
 }
-
 function setControls(){
   if(!menuSelected){
     if(controlSelected<0){controlSelected=0;}
@@ -1687,6 +1704,7 @@ function setControls(){
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
+//settings tab
 function settingsBox(id,x,y,w,h){
   let setting=settingsObjects[id];
   fill(id===settingSelected?30:10);
@@ -1722,7 +1740,6 @@ function settingsBox(id,x,y,w,h){
     break;
   }
 }
-
 function settings(){
   if(!menuSelected){
     if(settingSelected<0){settingSelected=0;}
@@ -1783,6 +1800,7 @@ function settings(){
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
+//levels tab
 function levelBox(lvl,x,y,w,h,n){
   fill(50);
   if(n===levelSelected){
@@ -1811,7 +1829,6 @@ function levelBox(lvl,x,y,w,h,n){
     rect(x,y,w,h);
   }
 }
-
 function levelSelect(){
   if(!menuSelected){
     if(levelSelected<0){levelSelected=0;}
@@ -1871,6 +1888,7 @@ function levelSelect(){
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
+//game paused
 let menuOption=0;
 function pausedGame(){
   drawMap(true);
@@ -1900,6 +1918,7 @@ function pausedGame(){
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
+//tutorial code
 function tutorialText(txt,small){
   ortho();
   resetMatrix();
@@ -2095,6 +2114,7 @@ function tutorial(){
   }
 }
 
+//draw
 checkCookie();
 function draw() {
   if(save.name===""&&state!="tutorial"){
@@ -2128,6 +2148,7 @@ function draw() {
   }
 }
 
+//event listeners
 function keyPressed() {
   switch(state){
     case('paused'):
