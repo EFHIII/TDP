@@ -39,6 +39,7 @@ This is a bit trickier to solve, but you shouldn't assume this to be the problem
 
 ## TODO
 - Main menu
+- proper forced tutorial
 - game elements
   - checkpoints
   - falling platforms?

@@ -2,6 +2,24 @@ const ZMAG=1.5;
 var currentMap;
 const gameMaps=[
   {
+    title:"C",
+    grid:[
+      " ,##########",
+      ",#{+++++GGG#",
+      "#{++++++GGG#",
+      "#+++++++GGG#",
+      "#++]########",
+      "#++#        ",
+      "#++#        ",
+      "#++}#######.",
+      "#+++++++++}#",
+      "#[+++++++S+#",
+      "l#[+++++++]#",
+      " l#########r",
+    ],
+    stars:[179,120,96,84]
+  },
+  {
     title:"Jump",
     grid:[
       "G",
@@ -304,7 +322,9 @@ function checkCookie() {
     try{
       data=JSON.parse(data);
       save.name=data.name;
-      settingsObjects[0].value=save.name;
+      didTutorial=true;
+      state="level select";
+      settingsObjects[1].value=save.name;
       for(let m in data.mapTimes){
         save.mapTimes[m]=data.mapTimes[m];
         save.replays[m]=data.replays[m];
@@ -345,8 +365,8 @@ let controls={
   left:37,
   right:39,
   jump:32,
-  spin:90,
-  blink:88,
+  spin:88,
+  blink:67,
   restart:82,
   nextLevel:13,
   nextLevel2:10,
@@ -359,8 +379,8 @@ let controlsSettings=[
   ['left','Left','Arrow Left'],
   ['right','Right','Arrow Right'],
   ['jump','Jump','Space'],
-  ['spin','Charged Boost','Z'],
-  ['blink','Cooldown Boost','X'],
+  ['spin','Charged Boost','X'],
+  ['blink','Cooldown Boost','C'],
   ['restart','Restart Level','R'],
   ['nextLevel','UI Select / Next Level','Enter'],
   ['pause','Pause','Backspace'],
@@ -421,6 +441,8 @@ let blinked=false;
 let finish=false;
 let finishTransition=0;
 
+let didTutorial=false;
+
 let startingHeight;
 let f;
 let mouseIn=false;
@@ -434,13 +456,14 @@ function preload() {
 }
 function setup() {
   can=createCanvas(windowWidth, windowHeight, WEBGL);
-  smooth();
   pg = createGraphics(200, 200);
 
   frameRate(60);
 
-  textFont(f);
   startingHeight=height;
+
+  textFont(f);
+  noSmooth();
   //performanceMode(true);
 }
 
@@ -1470,14 +1493,14 @@ function menuBar(){
   }
   rect(-width/2+width/3*menuState,-height/2,width/3,width/15);
   fill(255);
-  textSize(width/25);
+  textSize(width/25>>0);
   textAlign(CENTER,CENTER);
   text("Levels",-width/2+width/6,-height/2+width/40);
   text("Controls",-width/2+width/2,-height/2+width/40);
   text("Settings",width/2-width/6,-height/2+width/40);
 }
 
-let state="level select";
+let state="tutorial";
 
 let settingControl=false;
 function controlsBox(control,x,y,w,h){
@@ -1488,8 +1511,8 @@ function controlsBox(control,x,y,w,h){
   rect(x+2,y+2,w-4,h-4);
   fill(255);
   textAlign(CENTER,CENTER);
-  textSize(h/3);
-  text(controlsSettings[control][1],x,y,w/3,h);
+  textSize(h/3>>0);
+  text(controlsSettings[control][1],x,y,w/2,h);
   text(controlsSettings[control][2],x+w*2/3,y,w/3,h);
 }
 
@@ -1540,7 +1563,7 @@ function setControls(){
     fill(50);
     rect(-width/3,-width/6,width*2/3,width/3);
     fill(255);
-    textSize(width/20);
+    textSize(width/20>>0);
     textAlign(CENTER,CENTER);
     text("Press a key to set for\n"+controlsSettings[settingControl][1],-width/3,-width/6,width*2/3,width/3-width/20);
   }
@@ -1550,9 +1573,21 @@ function setControls(){
 
 let settingsObjects=[
   {
+    name:"Replay tutorial",
+    type:"action",
+    value:"",
+    run:function(){
+      state="tutorial";
+      tutorialStep=0;
+      tutorialPause=true;
+      tutorialMemory="";
+      tutorialTimer=0;
+    }
+  },
+  {
     name:"Change name",
     type:"action",
-    value:"N/A",
+    value:"Anonymous",
     run:function(){
       save.name="";
       while(save.name===""){
@@ -1566,7 +1601,7 @@ let settingsObjects=[
           save.name='';
         }
       }
-      settingsObjects[0].value=save.name;
+      settingsObjects[1].value=save.name;
     }
   },
   {
@@ -1599,7 +1634,7 @@ let settingsObjects=[
   {
     name:"Anti-aliasing",
     type:"toggle",
-    value:true,
+    value:false,
     run:function(selected){if(selected){smooth();}else{noSmooth();}}
   },
   {
@@ -1628,7 +1663,7 @@ function settingsBox(id,x,y,w,h){
   fill(id===settingSelected?30:10);
   rect(x+2,y+2,w-4,h-4);
   fill(255);
-  textSize(h/3);
+  textSize(h/3>>0);
   textAlign(CENTER,CENTER);
   switch(setting.type){
     case("action"):
@@ -1726,20 +1761,18 @@ function levelBox(lvl,x,y,w,h,n){
   }
   rect(x,y,w,h);
   fill(255);
-  textSize(h/4);
+  textSize(h/4>>0);
   text(lvl.title,x+w*1/3,y+h*1/6,w*2/3,h/2);
   fill(0);
   ellipse(x+w/6,y+h/2,h*2/3,h*2/3);
 
   if(save.mapTimes[lvl.title]){
     fill(255);
-    textSize(h/5);
-    text((save.mapTimes[lvl.title]/120/60>>0)+":"+(""+(save.mapTimes[lvl.title]/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(save.mapTimes[lvl.title]%120)/120>>0)).padStart(3,'0'),x+w*1/3,y+h*3/5,w*2/3,h*1/3);
+    text((save.mapTimes[lvl.title]/120/60>>0)+":"+(""+(save.mapTimes[lvl.title]/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(save.mapTimes[lvl.title]%120)/120>>0)).padStart(3,'0'),x+w*2/5,y+h*3/5+h/6);
   }
   else{
     fill(255);
-    textSize(h/5);
-    text("N/A",x+w*1/3,y+h*3/5,w*2/3,h*1/3);
+    text("N/A",x+w/2,y+h*3/5+h/6);
   }
 
   drawStar(x+w/6,y+h/2,h/3,save.mapTimes[lvl.title],lvl.stars);
@@ -1788,20 +1821,6 @@ function levelSelect(){
     if(levelSelected<0){levelSelected=-1;menuSelected=true;}
     if(levelSelected>=gameMaps.length){levelSelected=gameMaps.length-1;}
   }
-  if(save.name===""){
-    while(save.name===""){
-      save.name=prompt("What would you like to be called?\n(This is what will show on leaderboards)");
-      if(save.name==false||save.name===null){
-        alert("Name can't be blank");
-        save.name='';
-      }
-      else if(save.name.length>12){
-        alert('Name must be 12 characters or less.');
-        save.name='';
-      }
-    }
-    settingsObjects[0].value=save.name;
-  }
   ortho();
   resetMatrix();
   push();
@@ -1843,7 +1862,7 @@ function pausedGame(){
 
   fill(0);
   textAlign(CENTER,CENTER);
-  textSize(width/40);
+  textSize(width/40>>0);
   text("Quit to\nlevel select?",0,-width/32);
   text("YES",-width/12,width/28);
   text("NO",width/12,width/28);
@@ -1852,8 +1871,207 @@ function pausedGame(){
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
 
+function tutorialText(txt,small){
+  ortho();
+  resetMatrix();
+  push();
+  fill(50,200);
+  if(small){
+    rect(-width/2+width/10,height/2-width/5,width-width/5,width/5);
+    fill(255);
+    let ts=width/40>>0;
+    textAlign(CENTER,CENTER);
+    textSize(ts);
+    text(txt,-width/2+width/10+ts/4,height/2-width/5-ts*(txt.split('\n').length/2-0.25),width-width/5,width/5);
+    pop();
+    let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
+    perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
+    return;
+  }
+  rect(-width/2+width/10,-width/5,width-width/5,width*2/5);
+  fill(255);
+  let ts=width/30;
+  textAlign(CENTER,CENTER);
+  textSize(ts);
+  text(txt,-width/2+width/10+ts/4,-width/5-ts*(txt.split('\n').length/2-0.25),width-width/5,width*2/5);
+  pop();
+  let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
+  perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
+}
+
+let tutorialStep=0;
+let tutorialPause=true;
+let tutorialMemory="";
+let tutorialTimer=0;
+function tutorial(){
+  switch(tutorialStep){
+    case(0):
+      setupLevel(0);
+      drawMap(true);
+      tutorialText("Thanks for playing Top Down Platformer.\n\nThis game is all about going fast.\n\n\n(Press any key to continue)");
+    break;
+    case(1):
+      setupLevel(0);
+      drawMap(true);
+      tutorialText("You can move with Arrow keys\n\n↑\n← ↓ →\nMOVE");
+    break;
+    case(2):
+      tutorialPause=false;
+      keys[controls.blink]=false;
+      keys[controls.jump]=false;
+      keys[controls.spin]=false;
+      drawMap();
+      tutorialText("The objective is to get to the green goal as fast as possible. Try it now.\n\n↑\n← ↓ →\nMOVE",true);
+      if(finish){
+        tutorialTimer++;
+        if(tutorialTimer>120){
+          tutorialMemory=(timer/120/60>>0)+":"+(""+(timer/120>>0)%60).padStart(2,'0')+"."+(''+(1000*(timer%120)/120>>0)).padStart(3,'0');
+          setupLevel(0);
+          tutorialStep++;
+          tutorialTimer=0;
+        }
+      }
+    break;
+    case(3):
+      keys[controls.jump]=false;
+      keys[controls.spin]=false;
+      drawMap();
+      tutorialText(tutorialMemory+", not bad, not bad. But you can do better.\nHere's a little boost to help you out. Press C to go extra fast for a litte bit, but there's a cooldown so use it sparingly.",true);
+      if(finish){
+        tutorialTimer++;
+        if(tutorialTimer>120){
+          tutorialMemory=timer;
+          if(timer<180){
+            tutorialStep+=2;
+          }
+          else{
+            tutorialStep++;
+          }
+          setupLevel(0);
+          tutorialTimer=0;
+        }
+      }
+    break;
+    case(4):
+      keys[controls.jump]=false;
+      keys[controls.spin]=false;
+      drawMap();
+      tutorialText("C'mon, you can do better than that. At least get under a second and a half.\n\nPress C to go extra fast for a litte bit",true);
+      if(finish){
+        tutorialTimer++;
+        if(tutorialTimer>120){
+          tutorialMemory=timer;
+          if(timer<180){
+            tutorialStep++;
+          }
+          setupLevel(0);
+          tutorialTimer=0;
+        }
+      }
+    break;
+    case(5):
+      tutorialPause=true;
+      keys[controls.spin]=false;
+      setupLevel(1);
+      drawMap(true);
+      tutorialText("Nice job!\n\nI knew you could do it. "+
+      (tutorialMemory>gameMaps[0].stars[1]?"Since you got under 1.5 seconds, you":"You even")+
+      " got a "+
+      (tutorialMemory<gameMaps[0].stars[3]?"purple":tutorialMemory<=gameMaps[0].stars[2]?"gold":tutorialMemory<=gameMaps[0].stars[1]?"silver":"bronze")+
+      " star.\n\nYou have to get at least a bronze star in order to continue to the next level.");
+    break;
+    case(6):
+      tutorialPause=false;
+      keys[controls.spin]=false;
+      drawMap();
+      tutorialText("On this level, it looks like you're gonna have to jump.\n\nYou can jump with [ SPACE ]",true);
+      if(finish){
+        tutorialTimer++;
+        if(tutorialTimer>120){
+          tutorialMemory=timer;
+          if(timer<=gameMaps[1].stars[0]){
+            tutorialStep+=2;
+          }
+          else{
+            tutorialStep++;
+          }
+          setupLevel(1);
+          tutorialTimer=0;
+        }
+      }
+    break;
+    case(7):
+      tutorialPause=true;
+      drawMap(true);
+      tutorialText("Hmm... still a little slow...\nHere's another boost, you can use it by holding X while in the air. It'll give you a boost in whatever direction you're pointing as soon as you hit something, like the ground or a wall.\nYou can do this before the time starts by jumping in place.");
+    break;
+    case(8):
+      tutorialPause=false;
+      drawMap();
+      tutorialText("Hold X while in the air to get a boost as soon as you land.",true);
+      if(finish){
+        tutorialTimer++;
+        if(tutorialTimer>120){
+          tutorialMemory=timer;
+          if(timer<=gameMaps[1].stars[1]){
+            tutorialStep+=2;
+          }
+          else{
+            tutorialStep++;
+          }
+          setupLevel(1);
+          tutorialTimer=0;
+        }
+      }
+    break;
+    case(9):
+      drawMap();
+      tutorialText("Hold X while in the air to get a boost as soon as you land.\nYou can double jump and do this before the timer starts.\nTry and get at least silver.",true);
+      if(finish){
+        tutorialTimer++;
+        if(tutorialTimer>120){
+          tutorialMemory=timer;
+          if(timer<=gameMaps[1].stars[1]){
+            tutorialStep++;
+          }
+          setupLevel(1);
+          tutorialTimer=0;
+        }
+      }
+    break;
+    case(10):
+      tutorialPause=true;
+      menuState=1;
+      keys=[];
+      setControls();
+      tutorialText("Great job!\n\nYou've completed the tutorial.\nYou can do it again at anytime via the settings tab.");
+    break;
+    case(11):
+      keys=[];
+      setControls();
+      tutorialText("Feel free to change your controls in the controls tab, and have fun playing all the levels.\n\nIf you try hard enough, you might even get to the top of the leaderboard for some levels.");
+    break;
+    default:
+      state="controls";
+  }
+}
+
 checkCookie();
 function draw() {
+  if(save.name===""&&state!="tutorial"){
+    while(save.name===""){
+      save.name=prompt("What would you like to be called?\n(This is what will show on leaderboards)");
+      if(save.name==false||save.name===null){
+        alert("Name can't be blank");
+        save.name='';
+      }
+      else if(save.name.length>12){
+        alert('Name must be 12 characters or less.');
+        save.name='';
+      }
+    }
+    settingsObjects[1].value=save.name;
+  }
   noStroke();
   if(can){
     document.getElementById('defaultCanvas0').addEventListener('mouseover',mOver);
@@ -1867,6 +2085,7 @@ function draw() {
     case('controls'):setControls();break;
     case('settings'):settings();break;
     case('paused'):pausedGame();break;
+    case('tutorial'):tutorial();break;
   }
 }
 
@@ -1931,6 +2150,12 @@ function keyPressed() {
         controls[controlsSettings[settingControl][0]]=keyCode;
         controlsSettings[settingControl][2]=key.length>1?key.replace(/[\w]([A-Z])/g, function(s) {return s[0]+" "+s[1];}):key===' '?'Space':key.toUpperCase();
         settingControl=false;
+        return;
+      }
+    break;
+    case('tutorial'):
+      if(tutorialPause){
+        tutorialStep++;
         return;
       }
     break;
