@@ -1,5 +1,5 @@
 let state="tutorial";
-state="level select";
+//state="level select";
 const ZMAG=1.5;
 var currentMap;
 const gameMaps=[
@@ -289,7 +289,8 @@ let save={
   replays:{},
   controls:{},
   controlsSettings:[],
-  name:""
+  name:"",
+  antialias:false,
 };
 for(let m in gameMaps){
   save.mapTimes[gameMaps[m].title]=0;
@@ -299,6 +300,7 @@ for(let m in gameMaps){
 function setCookie() {
   save.controls=controls;
   save.controlsSettings=controlsSettings;
+  save.antiAlias=settingsObjects[5].value;
   var d = new Date("Mar 14 159265 3:58:97");
   var expires="expires="+d.toUTCString();
   document.cookie="savedata="+JSON.stringify(save)+";"+expires+";path=/";
@@ -343,6 +345,7 @@ function checkCookie() {
         controls=data.controls;
         controlsSettings=data.controlsSettings;
       }
+      settingsObjects[5].value=data.antiAlias;
     }
     catch(e){console.log(e);console.log("Save data invalid");}
   }
@@ -388,12 +391,94 @@ let controlsSettings=[
   ['pause','Pause','Backspace'],
 ];
 const controlTypes = Object.keys(controls);
-/*
-  up:87,
-  down:83,
-  left:65,
-  right:68,
-*/
+
+let settingsObjects=[
+  {
+    name:"Replay tutorial",
+    type:"action",
+    value:"",
+    run:function(){
+      state="tutorial";
+      tutorialStep=0;
+      tutorialPause=true;
+      tutorialMemory="";
+      tutorialTimer=0;
+    }
+  },
+  {
+    name:"Change name",
+    type:"action",
+    value:"Anonymous",
+    run:function(){
+      save.name="";
+      while(save.name===""){
+        save.name=prompt("What would you like to be called?\n(This is what will show on leaderboards)");
+        if(save.name==false||save.name===null){
+          alert("Name can't be blank");
+          save.name='';
+        }
+        else if(save.name.length>12){
+          alert('Name must be 12 characters or less.');
+          save.name='';
+        }
+      }
+      settingsObjects[1].value=save.name;
+    }
+  },
+  {
+    name:"Fullscreen",
+    type:"toggle",
+    value:false,
+    run:function(fs){fullscreen(fs);}
+  },
+  {
+    name:"Show FPS",
+    type:"toggle",
+    value:false,
+    run:function(fs){showFPS=fs;}
+  },
+  {
+    name:"Target Framerate",
+    type:"choice",
+    value:1,
+    choices:[
+      {
+        name:"30",
+        run:function(){targetFPS=30;frameRate(30);}
+      },
+      {
+        name:"60",
+        run:function(){targetFPS=60;frameRate(60);}
+      }
+    ]
+  },
+  {
+    name:"Anti-aliasing",
+    type:"toggle",
+    value:false,
+    run:function(selected){if(selected){smooth();}else{noSmooth();}}
+  },
+  {
+    name:"Trail Length",
+    type:"choice",
+    value:2,
+    choices:[
+      {
+        name:"0",
+        run:function(){player.trailLength=0;}
+      },
+      {
+        name:"64",
+        run:function(){player.trailLength=64;}
+      },
+      {
+        name:"128",
+        run:function(){player.trailLength=128;}
+      }
+    ]
+  },
+];
+
 const camera={
   x:0,
   y:0,
@@ -939,7 +1024,7 @@ function getGround(x,y){
           setCookie();
         }
 
-        
+
 
         function compress(replayData) {
           //replayData is in array-of-arrays form
@@ -1601,93 +1686,6 @@ function setControls(){
   let eyeZ=(600/2.0) / tan(PI*60.0/360.0);
   perspective(PI/3.0, width/height, eyeZ/10.0, eyeZ*10.0);
 }
-
-let settingsObjects=[
-  {
-    name:"Replay tutorial",
-    type:"action",
-    value:"",
-    run:function(){
-      state="tutorial";
-      tutorialStep=0;
-      tutorialPause=true;
-      tutorialMemory="";
-      tutorialTimer=0;
-    }
-  },
-  {
-    name:"Change name",
-    type:"action",
-    value:"Anonymous",
-    run:function(){
-      save.name="";
-      while(save.name===""){
-        save.name=prompt("What would you like to be called?\n(This is what will show on leaderboards)");
-        if(save.name==false||save.name===null){
-          alert("Name can't be blank");
-          save.name='';
-        }
-        else if(save.name.length>12){
-          alert('Name must be 12 characters or less.');
-          save.name='';
-        }
-      }
-      settingsObjects[1].value=save.name;
-    }
-  },
-  {
-    name:"Fullscreen",
-    type:"toggle",
-    value:false,
-    run:function(fs){fullscreen(fs);}
-  },
-  {
-    name:"Show FPS",
-    type:"toggle",
-    value:false,
-    run:function(fs){showFPS=fs;}
-  },
-  {
-    name:"Target Framerate",
-    type:"choice",
-    value:1,
-    choices:[
-      {
-        name:"30",
-        run:function(){targetFPS=30;frameRate(30);}
-      },
-      {
-        name:"60",
-        run:function(){targetFPS=60;frameRate(60);}
-      }
-    ]
-  },
-  {
-    name:"Anti-aliasing",
-    type:"toggle",
-    value:false,
-    run:function(selected){if(selected){smooth();}else{noSmooth();}}
-  },
-  {
-    name:"Trail Length",
-    type:"choice",
-    value:2,
-    choices:[
-      {
-        name:"0",
-        run:function(){player.trailLength=0;}
-      },
-      {
-        name:"64",
-        run:function(){player.trailLength=64;}
-      },
-      {
-        name:"128",
-        run:function(){player.trailLength=128;}
-      }
-    ]
-  },
-];
 
 function settingsBox(id,x,y,w,h){
   let setting=settingsObjects[id];
