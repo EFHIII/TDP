@@ -914,7 +914,38 @@ function getGround(x,y){
           setCookie();
         }
 
-        console.log(JSON.stringify(replayControlState))
+        
+
+        function compress(replayData) {
+          //replayData is in array-of-arrays form
+          //Convert it to array of strings form
+          return [...Array(replayData.length).keys()].map(index => {
+            //We use indexes because the array is sparse
+            let controlState = replayData[index];
+            console.log(controlState);
+            if (controlState != null) {
+              return controlState.map(pressed => pressed === true ? '1' : pressed === false ? '0' : 'X').join('');
+            } else {
+              return 0;
+            }
+          });
+        }
+        let replayData = JSON.stringify(compress(replayControlState));
+        console.log(replayData);
+        try {
+          //Send the replay data to the server
+          //Currently this is synchronous so it will freeze the game while sending
+          var xmlHttp = new XMLHttpRequest();
+          xmlHttp.open("POST", 'http://holly.spongejr.com:8125/submit-score?username=' + save.name + '&level=' + gameMaps[onLevel].title, false); // false for synchronous request
+          xmlHttp.setRequestHeader('Access-Control-Allow-Origin', '*');
+          xmlHttp.setRequestHeader('Content-Type', 'text/plain');
+          xmlHttp.send(replayData);
+          console.log(xmlHttp.responseText);
+          console.log('Replay sent');
+        } catch (e) {
+          console.log('Failed to send the data to the server');
+          //throw e;
+        }
       }
       return 0;
     default:
