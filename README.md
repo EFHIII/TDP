@@ -44,7 +44,6 @@ This is a bit trickier to solve, but you shouldn't assume this to be the problem
   - falling platforms?
   - moving platforms?
   - deadly-to-touch elements
-  - different elevation platforms
 - game visuals
   - landing animation
 - Save cookie of levels passed and replays
