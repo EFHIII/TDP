@@ -1,6 +1,6 @@
 let state="tutorial";
 //state="level select";
-const ZMAG=1.5;
+const ZMAG=1;
 var currentMap;
 //game maps
 const gameMaps=[
@@ -19,6 +19,20 @@ const gameMaps=[
       "#[+++++++S+#",
       "l#[+++++++]#",
       " l#########r",
+    ],
+    elevation:[
+      " 11111111111",
+      "111000000001",
+      "110000000001",
+      "100000000001",
+      "100111111111",
+      "1001        ",
+      "1001        ",
+      "100111111111",
+      "100000000011",
+      "110000000001",
+      "111000000011",
+      " 11111111111",
     ],
     stars:[179,120,96,84]
   },
@@ -49,6 +63,31 @@ const gameMaps=[
       "+",
       "S",
       "+"],
+    elevation:[
+      "1",
+      "1",
+      "1",
+      "1",
+      "1",
+      "1",
+      "1",
+      " ",
+      " ",
+      " ",
+      " ",
+      " ",
+      "2",
+      "2",
+      "2",
+      " ",
+      " ",
+      " ",
+      " ",
+      " ",
+      "1",
+      "1",
+      "1",
+      "1"],
     stars:[180,120,96,84]
   },
   {
@@ -97,42 +136,52 @@ const gameMaps=[
       "w##[+++++]##w#[++++++GGGGGG####w",
       "wl#########rwl##############wwww",
       "wwwwwwwwwwwww"],
+      elevation:[
+        " 11111111111111111111           ",
+        " 11100000000000000111           ",
+        " 11000000000000000011           ",
+        " 10000000000000000001           ",
+        " 10000000000000000001           ",
+        " 10000000001110000001           ",
+        " 10000000001610000001           ",
+        " 10000000001610000001           ",
+        " 10000000001610000001           ",
+        " 10000000001610000001           ",
+        " 10000000001610000001           ",
+        " 10000000001610000001           ",
+        " 10000000001610000001           ",
+        " 1000000000111000000166666666666",
+        " 10000000000000000001       1116",
+        " 10000000000000000001        116",
+        " 110000000111100000016666     16",
+        "6111000001116100000016         6",
+        "6611100011166100000016     00006",
+        "6111000001116100000016     00006",
+        "6110000000116100000016     00006",
+        "6100000000016100000016     00006",
+        "6100000000016100000016         6",
+        "6100000000016100000016         6",
+        "61000000000161000000160000     6",
+        "61000000000161000000160000     6",
+        "61000000000161000000160000     6",
+        "61000000000161000000160000     6",
+        "6100000000016100000016         6",
+        "6110000000116100000016         6",
+        "6111000001116100000016     00006",
+        "6611100011166100000016     00006",
+        "6111000001116100000016     00006",
+        "6110000000116100000016     00006",
+        "61000000000161000000111111111116",
+        "61000000000161000000000000011116",
+        "61000000000161000000000000011116",
+        "61000000000161000000000000011116",
+        "61000000000161000000000000011116",
+        "61100000001161000000000000011116",
+        "61110000011161100000000000011116",
+        "61111111111161111111111111116666",
+        "6666666666666"
+      ],
     stars:[420,360,264,228]
-  },
-  {
-    title:"Horrible",
-    grid:[
-  "                     w+ +    ",
-  "                     w       ",
-  "          w    w  +       +  ",
-  "             w    w  w+      ",
-  "      + w      +     w       ",
-  "       w         w   w     + ",
-  "   +    +  +         w       ",
-  "                     w       ",
-  "      +   w +   w    w       ",
-  "   +   w             w    +  ",
-  "w   w     +   +      w       ",
-  "                   w w       ",
-  "   +   +       w w   w       ",
-  "  w  +     +  w+     w       ",
-  "                     w     + ",
-  "   w w  w + w    w   w +     ",
-  " w            +      w       ",
-  "     ++    ++      + w       ",
-  "      + w    ++  w   w      +",
-  "       +  +    +   + w       ",
-  "  +  +      ++ w     w       ",
-  " w  w ww  w  +       w +     ",
-  "         +  w  w     w       ",
-  "               +     w       ",
-  "    +   +    w       w       ",
-  "     w    +          w       ",
-  "     +     wwww      w      +",
-  "             S       w       ",
-  "         +           w  G    ",
-],
-    stars:[7000,1000,120,60]
   },
   {
     title:"Mandelbrot",
@@ -174,6 +223,45 @@ const gameMaps=[
       "                    + ",
       "                    S ",
       "                    + "],
+    elevation:[
+        "               1 00   00 1     ",
+        "            0 666661 166666 0  ",
+        "           0161111160611111610 ",
+        "            61111111111111116  ",
+        "          061111111111111111160",
+        "          061111111111111111160",
+        "     1  0  6111111111111111116  0  1",
+        "       066061111111111111111160660  ",
+        "     0 611661111111111111111166116 0",
+        "        6606111111111111111116066   ",
+        "           6111111111111111116  ",
+        "           6111111111111111116  ",
+        "           0611111111111111160  ",
+        "           0611111111111111160  ",
+        "          011611111111111116110 ",
+        "          0  061111111111160  0 ",
+        "             0 66666166666 0    ",
+        "                 0116110 ",
+        "                  16661  ",
+        "                016111610",
+        "                061111160",
+        "                161111161",
+        "                061111160",
+        "                116111611",
+        "                 0166610 ",
+        "                  01610  ",
+        "                   010",
+        "                    1 ",
+        "                    1 ",
+        "                    1 ",
+        "                    0 ",
+        "                    0 ",
+        "                   111",
+        "                    0 ",
+        "                    0 ",
+        "                    0 ",
+        "                    0 "
+      ],
     stars:[1920,1440,960,600]
   },
   {
@@ -222,64 +310,161 @@ const gameMaps=[
       "w#[+++++++]#w#[++++++GGGGGG#",
       "wl#########rwl##############",
       "wwwwwwwwwwwww"],
+    elevation:[
+      " 11111111111111111111",
+      " 11000000000000000011",
+      " 10000000000000000001",
+      " 10000000000000000001",
+      " 10000000000000000001",
+      " 10000000001110000001",
+      " 10000000001110000001",
+      " 10000000001610000001",
+      " 10000000001610000001",
+      " 10000000001610000001",
+      " 10000000001610000001",
+      " 10000000001610000001",
+      " 10000000001610000001",
+      " 10000000001610000001",
+      " 10000000001110000001",
+      " 10000000000000000001",
+      " 10000000000000000001",
+      " 11000000011110000001",
+      "661110001116610000001",
+      "611000000011610000001",
+      "610000000001610000001",
+      "610000000001610000001",
+      "610000000001610000001",
+      "610000000001610000001",
+      "610000000001610000001",
+      "610000000001610000001",
+      "610000000001610000001",
+      "610000000001610000001",
+      "610000000001610000001",
+      "610000000001610000001",
+      "611000000011610000001",
+      "661110001116610000001",
+      "611000000011610000001",
+      "610000000001610000001",
+      "6100000000016100000011111111",
+      "6100000000016100000000000001",
+      "6100000000016100000000000001",
+      "6100000000016100000000000001",
+      "6100000000016100000000000001",
+      "6100000000016100000000000001",
+      "6110000000116110000000000001",
+      "6111111111116111111111111111",
+      "6666666666666"
+    ],
     stars:[420,360,264,228]
   },
   {
     title: "Bemazed",
     grid: [
-        "             ########################",
-        "             #++++++++++++++++GGGG++#",
-        "             #++++++++++++++++GGGG++#",
-        "             #++++           #GGGG++#",
-        "             #++++           #GGGG++#",
-        "wwwwwwwwwwwwww++++##         #####++#",
-        "w            w++++##              ++#",
-        "w            wwwww  wwwwwwwwwwwwww++#",
-        "w####   w     ++                  ++#",
-        "w####   w     ++                  ++#",
-        "wwwww   wwwwwwwwww    wwww  wwww  ++#",
-        "w            w    ##     w  w     ++#",
-        "w            w    ##     w  w     ++#",
-        "w## w        w  ####     wGGw     ++#",
-        "w## w        w  ####     wGGw     ++#",
-        "w   w++##    www##wwwwwwwwwww     ++#",
-        "w   w++##         w##   ++++++++++++#",
-        "w   w  ++         w##   ++++++++++++#",
-        "w   w  ++         w##   w############",
-        "w++ wwwwwww  w  ##w##   w            ",
-        "w++          w  ##wwww  w            ",
-        "w++++        w  ##      w            ",
-        "wS+++        w  ##      w            ",
-        "wwwwwwwwwwwwwwwwwwwwwwwww            "],
+      "             ########################",
+      "             #++++++++++++++++GGGG++#",
+      "             #++++++++++++++++GGGG++#",
+      "             #++++           #GGGG++#",
+      "             #++++           #GGGG++#",
+      "wwwwwwwwwwwwww++++##         #####++#",
+      "w            w++++##              ++#",
+      "w            wwwww  wwwwwwwwwwwwww++#",
+      "w####   w     ++                  ++#",
+      "w####   w     ++                  ++#",
+      "wwwww   wwwwwwwwww    wwww  wwww  ++#",
+      "w            w    ##     w  w     ++#",
+      "w            w    ##     w  w     ++#",
+      "w## w        w  ####     wGGw     ++#",
+      "w## w        w  ####     wGGw     ++#",
+      "w   w++##    www##wwwwwwwwwww     ++#",
+      "w   w++##         w##   ++++++++++++#",
+      "w   w  ++         w##   ++++++++++++#",
+      "w   w  ++         w##   w############",
+      "w++ wwwwwww  w  ##w##   w            ",
+      "w++          w  ##wwww  w            ",
+      "w++++        w  ##      w            ",
+      "wS+++        w  ##      w            ",
+      "wwwwwwwwwwwwwwwwwwwwwwwww            "],
+    elevation:[
+      "             111111111111111111111111",
+      "             100000000000000000000001",
+      "             100000000000000000000001",
+      "             10000           10000001",
+      "             10000           10000001",
+      "66666666666666000011         11111001",
+      "6            6000011              001",
+      "6            66666  66666666666666001",
+      "61111   6     00                  001",
+      "61111   6     00                  001",
+      "66666   6666666666    6666  6666  001",
+      "6            6    11     6  6     001",
+      "6            6    11     6  6     001",
+      "611 6        6  1111     6006     001",
+      "611 6        6  1111     6006     001",
+      "6   60011    6661166666666666     001",
+      "6   60011         611   0000000000001",
+      "6   6  00         611   0000000000001",
+      "6   6  00         611   6111111111111",
+      "600 6666666  6  11611   6            ",
+      "600          6  116666  6            ",
+      "60000        6  11      6            ",
+      "60000        6  11      6            ",
+      "6666666666666666666666666            "
+    ],
     stars:[960,720,420,312]
   },
   {
     title: "Square Off",
     grid: [
-        "wwwwww+wwwwwwwwwwwwwwwww",
-        "w++++++##       ##   ++w",
-        "w++++++##       ##   ++w",
-        "w++wwwwww            ++w",
-        "w++     w            ++w",
-        "w++     wwwww  www   ++w",
-        "wwwwww  w      w     ++w",
-        "w++     w      w     ++w",
-        "w[+     w##wwwww  www++w",
-        "ww[     ###w         ++w",
-        "www.    ###w         ++w",
-        "wwww.   wwww   wwwwww++w",
-        "wwwww.  w   +++w     ++w",
-        "wwwww{  w   +++w     ++w",
-        "wwww{+  w   +++w     ++w",
-        "www{++ ww  wwwww     ++w",
-        "ww{++]www  #GGG#     ++w",
-        "w{++]www   #GGG#     ++w",
-        "#++]www    #GGG#     ++w",
-        "#S]www     #GGG#     ++w",
-        "#]www      #GGG#     ++w",
-        "#www+++++++++++++++++++w",
-        "www++++++++++++++++++++w",
-        "wwwwwwwwwwwwwwwwwwwwwwww"],
+      "wwwwww+wwwwwwwwwwwwwwwww",
+      "w++++++##       ##   ++w",
+      "w++++++##       ##   ++w",
+      "w++wwwwww            ++w",
+      "w++     w            ++w",
+      "w++     wwwww  www   ++w",
+      "wwwwww  w      w     ++w",
+      "w++     w      w     ++w",
+      "w[+     w##wwwww  www++w",
+      "ww[     ###w         ++w",
+      "www.    ###w         ++w",
+      "wwww.   wwww   wwwwww++w",
+      "wwwww.  w   +++w     ++w",
+      "wwwww{  w   +++w     ++w",
+      "wwww{+  w   +++w     ++w",
+      "www{++ ww  wwwww     ++w",
+      "ww{++]www  #GGG#     ++w",
+      "w{++]www   #GGG#     ++w",
+      "#++]www    #GGG#     ++w",
+      "#S]www     #GGG#     ++w",
+      "#]www      #GGG#     ++w",
+      "#www+++++++++++++++++++w",
+      "www++++++++++++++++++++w",
+      "wwwwwwwwwwwwwwwwwwwwwwww"],
+    elevation:[
+      "666666066666666666666666",
+      "600000011       11   006",
+      "600000011       11   006",
+      "600666666            006",
+      "600     6            006",
+      "600     66666  666   006",
+      "666666  6      6     006",
+      "600     6      6     006",
+      "610     61166666  666006",
+      "661     1116         006",
+      "6661    1116         006",
+      "66661   6666   666666006",
+      "666661  6   0006     006",
+      "666661  6   0006     006",
+      "666610  6   0006     006",
+      "666100 66  66666     006",
+      "661001666  10001     006",
+      "61001666   10001     006",
+      "1001666    10001     006",
+      "101666     10001     006",
+      "11666      10001     006",
+      "166600000000000000000006",
+      "666000000000000000000006",
+      "666666666666666666666666"
+    ],
     stars:[1200,900,720,600]
   }
 ];
@@ -602,7 +787,7 @@ function maxFromRow(row) {
     }
     return [x,w,maxR];
 };
-function maxRectangle(A) {
+function maxRectangle(A,elv) {
     let C=A[0].length;
     let R=A.length;
 
@@ -626,9 +811,9 @@ function maxRectangle(A) {
         }
     }
 
-    return {x:x,y:y,w:w,h:h};
+    return {x:x,y:y,z:elv,w:w,h:h};
 };
-function rectDivision(chars){
+function rectDivision(chars,elv){
   let rects=[];
   let a=1;
   while(a>0){
@@ -637,7 +822,7 @@ function rectDivision(chars){
         tgrid.push([]);
         for(let j=0;j<currentMap.grid[i].length;j++){
             tgrid[i].push(
-                chars.indexOf(currentMap.grid[i][j])>=0?1:0);
+                elv==currentMap.elevation[i][j]-("{}[]".indexOf(currentMap.grid[i][j])>=0?1:0)&&chars.indexOf(currentMap.grid[i][j])>=0?1:0);
         }
     }
     for(let i=0;i<rects.length;i++){
@@ -656,7 +841,7 @@ function rectDivision(chars){
         }
     }
 
-    rects.push(maxRectangle(tgrid));
+    rects.push(maxRectangle(tgrid,elv));
     a=rects[rects.length-1].w;
 
     if(a===0){
@@ -723,10 +908,17 @@ function setupLevel(lvl,restarting){
     camera.z=0;
   }
 
-  div.floor=rectDivision('+S[]{}');
-  div.rail=rectDivision('#');
-  div.wall=rectDivision('w');
-  div.goal=rectDivision('G');
+  div.floor=[];
+  div.rail=[];
+  div.wall=[];
+  div.goal=[];
+
+  for(var i=0;i<10;i++){
+    div.floor=div.floor.concat(rectDivision('+S[]{}',i));
+    div.rail=div.rail.concat(rectDivision('#',i));
+    div.wall=div.wall.concat(rectDivision('w',i));
+    div.goal=div.goal.concat(rectDivision('G',i));
+  }
 }
 setupLevel(onLevel);
 
@@ -850,10 +1042,10 @@ function tileShadow(x,y,w,h,z,c,r){
   translate((x+w/2-0.5)*tileSize,(y+h/2-0.5)*tileSize,(z-1)*tileSize*ZMAG);
   if(r){rotateZ(r);}
 }
-function drawBox(x,y,w,h,z,r,g,b){
+function drawBox(x,y,w,h,z,r,g,b,top){
   push();
 
-  tileShadow(x,y,w,h,z,b?color(r,g,b):color(90+z*10));
+  tileShadow(x,y,w,h,z,top?top:b?color(r,g,b):color(90+z*10));
   plane(w*tileSize,h*tileSize);
 
   for(let k=0;k<4;k++){
@@ -866,7 +1058,6 @@ function drawBox(x,y,w,h,z,r,g,b){
     }
 
     push();
-
       rotateZ(HALF_PI*k);
       translate(0,tileSize/2*(k%2?w:h),-tileSize/2*z*ZMAG);
       rotateX(HALF_PI);
@@ -883,7 +1074,7 @@ function triangleBox(x,y,z,r){
     fill(sin((k-1)*HALF_PI)*10+45);
     translate(x*tileSize,y*tileSize);
     rotateZ(HALF_PI*k);
-    translate(0,tileSize/2,-tileSize/2*z*ZMAG);
+    translate(0,tileSize/2,tileSize/2*(z-2)*ZMAG);
     rotateX(HALF_PI);
     plane(tileSize,tileSize*z*ZMAG);
   pop();
@@ -892,14 +1083,14 @@ function triangleBox(x,y,z,r){
     fill(sin((k-1)*HALF_PI)*10+45);
     translate(x*tileSize,y*tileSize);
     rotateZ(HALF_PI*k);
-    translate(0,tileSize/2,-tileSize/2*z*ZMAG);
+    translate(0,tileSize/2,tileSize/2*(z-2)*ZMAG);
     rotateX(HALF_PI);
     plane(tileSize,tileSize*z*ZMAG);
   pop();
 
   fill(sin((r+4)*QUARTER_PI)*10+45);
   push();
-    translate(x*tileSize,y*tileSize,(-(z+1)/2+0.5)*tileSize*ZMAG);
+    translate(x*tileSize,y*tileSize,((z-2)/2)*tileSize*ZMAG);
     rotateZ(QUARTER_PI*r);
     rotateX(HALF_PI);
     plane(tileSize*1.4142135623730951,tileSize*z*ZMAG);
@@ -969,36 +1160,21 @@ function playerCollision(i,j){
   if(i<0||j<0){return;}
   let t=currentMap.grid.length>j?(currentMap.grid[j].length>i?currentMap.grid[j][i]:false):false;
   if(t===false){return;}
+  let elv=1*currentMap.elevation[j][i];
   let temp;
   switch(t){
-    // normal ground
+    // normal surface
     case('+'):
     case('G'):
     case('S'):
-      return shapeIntersect([
-        {x:i-0.5001,y:j-0.5},
-        {x:i+0.5001,y:j-0.5},
-        {x:i+0.5,y:j+0.5},
-        {x:i-0.5,y:j+0.5},
-      ],0,player.x,player.y,player.z,player.d/2);
-    break;
-    // ledge
     case('#'):
-      return shapeIntersect([
-        {x:i-0.5001,y:j-0.5},
-        {x:i+0.5001,y:j-0.5},
-        {x:i+0.5,y:j+0.5},
-        {x:i-0.5,y:j+0.5},
-      ],1,player.x,player.y,player.z,player.d/2);
-    break;
-    //wall
     case('w'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
         {x:i+0.5001,y:j-0.5},
         {x:i+0.5,y:j+0.5},
         {x:i-0.5,y:j+0.5},
-      ],5,player.x,player.y,player.z,player.d/2);
+      ],elv,player.x,player.y,player.z,player.d/2);
     break;
     // triangles
     case('['):
@@ -1007,14 +1183,14 @@ function playerCollision(i,j){
         {x:i+0.5001,y:j-0.5},
         {x:i+0.5,y:j+0.5},
         {x:i-0.5,y:j+0.5},
-      ],0,player.x,player.y,player.z,player.d/2);
+      ],elv-1,player.x,player.y,player.z,player.d/2);
       if(temp){return temp;}
     case('.'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
         {x:i+0.5001,y:j+0.5},
         {x:i-0.5,y:j+0.5},
-      ],1,player.x,player.y,player.z,player.d/2);
+      ],elv,player.x,player.y,player.z,player.d/2);
     break;
     case(']'):
       temp=shapeIntersect([
@@ -1022,14 +1198,14 @@ function playerCollision(i,j){
         {x:i+0.5001,y:j-0.5},
         {x:i+0.5,y:j+0.5},
         {x:i-0.5,y:j+0.5},
-      ],0,player.x,player.y,player.z,player.d/2);
+      ],elv-1,player.x,player.y,player.z,player.d/2);
       if(temp){return temp;}
     case(','):
       return shapeIntersect([
         {x:i+0.5001,y:j-0.5},
         {x:i+0.5001,y:j+0.5},
         {x:i-0.5,y:j+0.5},
-      ],1,player.x,player.y,player.z,player.d/2);
+      ],elv,player.x,player.y,player.z,player.d/2);
     break;
     case('}'):
       temp=shapeIntersect([
@@ -1037,14 +1213,14 @@ function playerCollision(i,j){
         {x:i+0.5001,y:j-0.5},
         {x:i+0.5,y:j+0.5},
         {x:i-0.5,y:j+0.5},
-      ],0,player.x,player.y,player.z,player.d/2);
+      ],elv-1,player.x,player.y,player.z,player.d/2);
       if(temp){return temp;}
     case('l'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
         {x:i+0.5001,y:j-0.5},
         {x:i+0.5,y:j+0.5},
-      ],1,player.x,player.y,player.z,player.d/2);
+      ],elv,player.x,player.y,player.z,player.d/2);
     break;
     case('{'):
       temp=shapeIntersect([
@@ -1052,14 +1228,14 @@ function playerCollision(i,j){
         {x:i+0.5001,y:j-0.5},
         {x:i+0.5,y:j+0.5},
         {x:i-0.5,y:j+0.5},
-      ],0,player.x,player.y,player.z,player.d/2);
+      ],elv-1,player.x,player.y,player.z,player.d/2);
       if(temp){return temp;}
     case('r'):
       return shapeIntersect([
         {x:i-0.5001,y:j-0.5},
         {x:i+0.5001,y:j-0.5},
         {x:i-0.5,y:j+0.5},
-      ],1,player.x,player.y,player.z,player.d/2);
+      ],elv,player.x,player.y,player.z,player.d/2);
     break;
   }
 }
@@ -1071,37 +1247,34 @@ function getGround(x,y){
     return -100;
   }
   switch(currentMap.grid[Y][X]){
-    case(' '):
-      return -100;
+    case('+'):
+    case('S'):
     case('#'):
-      return 1;
     case('w'):
-      return 5;
+      return currentMap.elevation[Y][X];
     case('['):
-      return y-Y>x-X?1:0;
+      return y-Y>x-X?currentMap.elevation[Y][X]:currentMap.elevation[Y][X]-1;
     case(']'):
-      return Y-y>x-X?0:1;
+      return Y-y>x-X?currentMap.elevation[Y][X]-1:currentMap.elevation[Y][X];
     case('l'):
-      return y-Y>x-X?-100:1;
+      return y-Y>x-X?-100:currentMap.elevation[Y][X];
     case('r'):
-      return Y-y>x-X?1:-100;
+      return Y-y>x-X?currentMap.elevation[Y][X]:-100;
     case('}'):
-      return y-Y>x-X?0:1;
+      return y-Y>x-X?currentMap.elevation[Y][X]-1:currentMap.elevation[Y][X];
     case('{'):
-      return Y-y>x-X?1:0;
+      return Y-y>x-X?currentMap.elevation[Y][X]:currentMap.elevation[Y][X]-1;
     case('.'):
-      return y-Y>x-X?1:-100;
+      return y-Y>x-X?currentMap.elevation[Y][X]:-100;
     case(','):
-      return Y-y>x-X?-100:1;
+      return Y-y>x-X?-100:currentMap.elevation[Y][X];
     case('G'):
-      if(player.z>=0){
+      if(player.z>=currentMap.elevation[Y][X]){
         finish=true;
         if(!save.mapTimes[currentMap.title] || timer<save.mapTimes[currentMap.title]){
           save.mapTimes[currentMap.title]=timer;
           setCookie();
         }
-
-
 
         function compress(replayData) {
           //replayData is in array-of-arrays form
@@ -1109,7 +1282,8 @@ function getGround(x,y){
           return [...Array(replayData.length).keys()].map(index => {
             //We use indexes because the array is sparse
             let controlState = replayData[index];
-            console.log(controlState);
+            //console.log(controlState);
+
             if (controlState != null) {
               return controlState.map(pressed => pressed === true ? '1' : pressed === false ? '0' : 'X').join('');
             } else {
@@ -1118,7 +1292,8 @@ function getGround(x,y){
           });
         }
         let replayData = JSON.stringify(compress(replayControlState));
-        console.log(replayData);
+
+        //console.log(replayData);
         try {
           //Send the replay data to the server
           //Currently this is synchronous so it will freeze the game while sending
@@ -1136,7 +1311,7 @@ function getGround(x,y){
       }
       return 0;
     default:
-      return 0;
+      return -100;
   }
 }
 
@@ -1184,9 +1359,9 @@ function stepPlayer() {
   if(player.z<-20){
     setupLevel(onLevel,true);
   }
-  let ground=getGround(player.x,player.y);
+  let ground=1*getGround(player.x,player.y);
   for(let i=0;i<PI*2;i+=PI/4){
-    let temp=getGround(player.x+cos(i)*(player.d-0.001)/2,player.y+sin(i)*(player.d-0.001)/2,1);
+    let temp=1*getGround(player.x+cos(i)*(player.d-0.001)/2,player.y+sin(i)*(player.d-0.001)/2,1);
     if(temp>ground&&temp<=player.z){
       ground=temp;
     }
@@ -1480,32 +1655,32 @@ function drawMap(paused){
     for(let j=0;j<currentMap.grid[i].length;j++){
       switch(currentMap.grid[i][j]){
         case("l"):
-          triangleBox(j,i,1,1);
+          triangleBox(j,i,currentMap.elevation[i][j],1);
         break;
         case("r"):
-          triangleBox(j,i,1,3);
+          triangleBox(j,i,currentMap.elevation[i][j],3);
         break;
         case(","):
-          triangleBox(j,i,1,7);
+          triangleBox(j,i,currentMap.elevation[i][j],7);
         break;
         case("."):
-          triangleBox(j,i,1,5);
+          triangleBox(j,i,currentMap.elevation[i][j],5);
         break;
         case("}"):
           fill(40);
-          triangleBox(j,i,1,1);
+          triangleBox(j,i,currentMap.elevation[i][j],1);
         break;
         case("{"):
           fill(40);
-          triangleBox(j,i,1,3);
+          triangleBox(j,i,currentMap.elevation[i][j],3);
         break;
         case("]"):
           fill(40);
-          triangleBox(j,i,1,7);
+          triangleBox(j,i,currentMap.elevation[i][j],7);
         break;
         case("["):
           fill(40);
-          triangleBox(j,i,1,5);
+          triangleBox(j,i,currentMap.elevation[i][j],5);
         break;
       }
     }
@@ -1513,21 +1688,21 @@ function drawMap(paused){
 
   for(let i=0;i<div.floor.length;i++){
     push();
-    tileShadow(div.floor[i].x,div.floor[i].y,div.floor[i].w,div.floor[i].h,0,color(90));
+    tileShadow(div.floor[i].x,div.floor[i].y,div.floor[i].w,div.floor[i].h,div.floor[i].z,color(90+10*div.floor[i].z));
     plane(div.floor[i].w*tileSize,div.floor[i].h*tileSize);
     pop();
   }
   for(let i=0;i<div.goal.length;i++){
     push();
-    tileShadow(div.goal[i].x,div.goal[i].y,div.goal[i].w,div.goal[i].h,0,color(80,250,80));
+    tileShadow(div.goal[i].x,div.goal[i].y,div.goal[i].w,div.goal[i].h,div.goal[i].z,color(0,200+5*div.goal[i].z,0));
     plane(div.goal[i].w*tileSize,div.goal[i].h*tileSize);
     pop();
   }
   for(let i=0;i<div.rail.length;i++){
-    drawBox(div.rail[i].x,div.rail[i].y,div.rail[i].w,div.rail[i].h,1);
+    drawBox(div.rail[i].x,div.rail[i].y,div.rail[i].w,div.rail[i].h,div.rail[i].z);
   }
   for(let i=0;i<div.wall.length;i++){
-    drawBox(div.wall[i].x,div.wall[i].y,div.wall[i].w,div.wall[i].h,5,60,65,70);
+    drawBox(div.wall[i].x,div.wall[i].y,div.wall[i].w,div.wall[i].h,div.wall[i].z,30,45,50,color(25+5*div.wall[i].z,35+5*div.wall[i].z,40+5*div.wall[i].z));
   }
 
   drawPlayer();
