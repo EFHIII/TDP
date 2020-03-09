@@ -40,29 +40,29 @@ const gameMaps=[
     title:"Jump",
     grid:[
       "G",
-      "+",
-      "+",
-      "+",
-      "+",
-      "+",
-      "+",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
       " ",
       " ",
       " ",
       " ",
       " ",
-      "+",
-      "+",
-      "+",
+      "#",
+      "#",
+      "#",
       " ",
       " ",
       " ",
       " ",
       " ",
-      "+",
-      "+",
+      "#",
+      "#",
       "S",
-      "+"],
+      "#"],
     elevation:[
       "1",
       "1",
@@ -1276,6 +1276,7 @@ function getGround(x,y){
           setCookie();
         }
 
+        /*
         function compress(replayData) {
           //replayData is in array-of-arrays form
           //Convert it to array of strings form
@@ -1308,6 +1309,7 @@ function getGround(x,y){
           console.log('Failed to send the data to the server');
           //throw e;
         }
+        */
       }
       return 0;
     default:
