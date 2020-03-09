@@ -765,7 +765,6 @@ function tileShadow(x,y,w,h,z,c,r,type){
     if(type!==undefined){
       pg.push();
       pg.translate(tileSize/2,tileSize/2);
-      pg.rotate(HALF_PI);
       if(r){
         pg.rotate(r);
       }
