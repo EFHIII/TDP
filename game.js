@@ -194,9 +194,9 @@ const gameMaps=[
       "#+^+#LLLLLLL#",
       "#+^+#LLLLLLL#",
       "#+^+}########",
-      "#++++++++++}#",
+      "#+++++>+v++}#",
       "#[+BB+++++S+#",
-      "l#[++++++++]#",
+      "l#[+++^+<++]#",
       " l##########r",
     ],
     elevation:[
@@ -447,7 +447,9 @@ const player={
   blink:30,//blink duration
   blinkV:0.3,
   bumperV:0.05,
+  bumperSpinV:0.05,
   boosterV:1.02,
+  boosterVP:0.002,
   blinkCooldown:300,
   trailLength:128,
   trailSpeed:0.04
@@ -483,7 +485,9 @@ let mouseIn=false;
 
 let can;
 
+//image variables
 let boostPadImg;
+let boostPadIdleImg;
 
 //initialization functions
 function preload() {
@@ -497,6 +501,7 @@ function setup() {
 
   frameRate(60);
 
+  boostPadIdleImg=loadImage("boostPadIdle.png");
   boostPadImg=loadImage("boostPad.png");
 
   startingHeight=height;
@@ -758,10 +763,19 @@ function tileShadow(x,y,w,h,z,c,r,type){
 
     pg.background(c);
     if(type!==undefined){
-      switch(type){
-        case("booster"):
-          pg.image(boostPadImg,0,0,tileSize,tileSize);
-        break;
+      if((player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<player.d*player.d/4){
+        switch(type){
+          case("booster"):
+            pg.image(boostPadImg,0,0,tileSize,tileSize);
+          break;
+        }
+      }
+      else{
+        switch(type){
+          case("booster"):
+            pg.image(boostPadIdleImg,0,0,tileSize,tileSize);
+          break;
+        }
       }
     }
 
@@ -800,6 +814,25 @@ function tileShadow(x,y,w,h,z,c,r,type){
       pg.ellipse(w*tileSize-10,10,10,10);
       pg.fill(0,255,0);
       pg.ellipse(10,h*tileSize-10,10,10);
+    }
+    texture(pg);
+  }
+  else if(type!==undefined){
+    pg.resizeCanvas(w*tileSize, h*tileSize);
+    pg.background(c);
+    if((player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<player.d*player.d/4){
+      switch(type){
+        case("booster"):
+          pg.image(boostPadImg,0,0,tileSize,tileSize);
+        break;
+      }
+    }
+    else{
+      switch(type){
+        case("booster"):
+          pg.image(boostPadIdleImg,0,0,tileSize,tileSize);
+        break;
+      }
     }
     texture(pg);
   }
@@ -948,12 +981,40 @@ function playerCollision(i,j){
       {x:i+0.5,y:j+0.5},
       {x:i-0.5,y:j+0.5},
     ],elv+0.2,player.x,player.y,player.z,player.d/2)){
-      player.vx*=player.boosterV;
-      player.vy*=player.boosterV;
-      i=20;
+      player.vy=player.vy<0?player.vy*player.boosterV:player.vy-player.boosterVP;
     }
+    break;
+    case('v')://booster
+    if(shapeIntersect([
+      {x:i-0.5001,y:j-0.5},
+      {x:i+0.5001,y:j-0.5},
+      {x:i+0.5,y:j+0.5},
+      {x:i-0.5,y:j+0.5},
+    ],elv+0.2,player.x,player.y,player.z,player.d/2),PI){
+      player.vy=player.vy>0?player.vy*player.boosterV:player.vy+player.boosterVP;
+    }
+    break;
+    case('<')://booster
+    if(shapeIntersect([
+      {x:i-0.5001,y:j-0.5},
+      {x:i+0.5001,y:j-0.5},
+      {x:i+0.5,y:j+0.5},
+      {x:i-0.5,y:j+0.5},
+    ],elv+0.2,player.x,player.y,player.z,player.d/2),PI){
+      player.vx=player.vx<0?player.vx*player.boosterV:player.vx-player.boosterVP;
+    }
+    break;
+    case('>')://booster
+    if(shapeIntersect([
+      {x:i-0.5001,y:j-0.5},
+      {x:i+0.5001,y:j-0.5},
+      {x:i+0.5,y:j+0.5},
+      {x:i-0.5,y:j+0.5},
+    ],elv+0.2,player.x,player.y,player.z,player.d/2),PI){
+      player.vx=player.vx>0?player.vx*player.boosterV:player.vx+player.boosterVP;
+    }
+    break;
     // normal surface
-    case('^')://booster
     case('G'):
     case('+'):
     case('S'):
@@ -1042,6 +1103,9 @@ function getGround(x,y){
     case('#'):
     case('w'):
     case('^'):
+    case('v'):
+    case('<'):
+    case('>'):
     case('B'):
       return currentMap.elevation[Y][X];
     case('['):
@@ -1233,10 +1297,18 @@ function stepPlayer() {
       switch(currentMap.grid[Y][X]){
         case('B')://booster
         if(player.z<elv){
-          player.vz=-player.vz*0.9+player.bumperV;
+          player.vz=-player.vz*0.5+player.bumperV;
           i=20;
           bouncing=true;
           player.z=ground;
+          doubleJump=false;
+          if(spinning){
+            player.vz+=player.bumperSpinV*player.a*spin;
+            player.vx*=1+player.a*spin;
+            player.vy*=1+player.a*spin;
+            spinning=false;
+            spin=0;
+          }
         }
       }
     }
@@ -1316,15 +1388,15 @@ function stepPlayer() {
         if(blinking>0){
           blinking=-player.blinkCooldown;
           player.vz=player.vz+0.02*player.ms*(-player.vz+0.1)/2+0.02;
-          player.vx*=1+0.01*player.ms;
-          player.vy*=1+0.01*player.ms;
+          player.vx*=1+player.a*player.ms;
+          player.vy*=1+player.a*player.ms;
           spinning=false;
           spin=0;
         }
         else if(spinning){
           player.vz=player.vz+0.02*spin*((-player.vz+0.1)/2+0.02);
-          player.vx*=1+0.01*spin;
-          player.vy*=1+0.01*spin;
+          player.vx*=1+player.a*spin;
+          player.vy*=1+player.a*spin;
           spinning=false;
           spin=0;
         }
@@ -1477,6 +1549,24 @@ function drawMap(paused){
         case("^"):
           push();
           tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),undefined,"booster");
+          plane(tileSize,tileSize);
+          pop();
+        break;
+        case("v"):
+          push();
+          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),undefined,"booster",PI);
+          plane(tileSize,tileSize);
+          pop();
+        break;
+        case(">"):
+          push();
+          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),undefined,"booster",HALF_PI);
+          plane(tileSize,tileSize);
+          pop();
+        break;
+        case("<"):
+          push();
+          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),undefined,"booster",HALF_PI*3);
           plane(tileSize,tileSize);
           pop();
         break;
