@@ -763,20 +763,25 @@ function tileShadow(x,y,w,h,z,c,r,type){
 
     pg.background(c);
     if(type!==undefined){
-      if((player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<player.d*player.d/4){
+      pg.push();
+      if(r){
+        pg.rotate(r);
+      }
+      if((player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<(player.d+0.6)*(player.d+0.6)/4){
         switch(type){
           case("booster"):
-            pg.image(boostPadImg,0,0,tileSize,tileSize);
+            pg.image(boostPadImg,-tileSize/2,-tileSize/2,tileSize,tileSize);
           break;
         }
       }
       else{
         switch(type){
           case("booster"):
-            pg.image(boostPadIdleImg,0,0,tileSize,tileSize);
+            pg.image(boostPadIdleImg,-tileSize/2,-tileSize/2,tileSize,tileSize);
           break;
         }
       }
+      pg.pop();
     }
 
     pg.noStroke();
@@ -819,21 +824,28 @@ function tileShadow(x,y,w,h,z,c,r,type){
   }
   else if(type!==undefined){
     pg.resizeCanvas(w*tileSize, h*tileSize);
+
     pg.background(c);
-    if((player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<player.d*player.d/4){
+    pg.push();
+    if(r){
+      pg.rotate(r);
+    }
+    if((player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<(player.d+0.6)*(player.d+0.6)/4){
       switch(type){
         case("booster"):
-          pg.image(boostPadImg,0,0,tileSize,tileSize);
+          pg.image(boostPadImg,-tileSize/2,-tileSize/2,tileSize,tileSize);
         break;
       }
     }
     else{
       switch(type){
         case("booster"):
-          pg.image(boostPadIdleImg,0,0,tileSize,tileSize);
+          pg.image(boostPadIdleImg,-tileSize/2,-tileSize/2,tileSize,tileSize);
         break;
       }
     }
+    pg.pop();
+    fill(c);
     texture(pg);
   }
   else{
@@ -990,7 +1002,7 @@ function playerCollision(i,j){
       {x:i+0.5001,y:j-0.5},
       {x:i+0.5,y:j+0.5},
       {x:i-0.5,y:j+0.5},
-    ],elv+0.2,player.x,player.y,player.z,player.d/2),PI){
+    ],elv+0.2,player.x,player.y,player.z,player.d/2)){
       player.vy=player.vy>0?player.vy*player.boosterV:player.vy+player.boosterVP;
     }
     break;
@@ -1000,7 +1012,7 @@ function playerCollision(i,j){
       {x:i+0.5001,y:j-0.5},
       {x:i+0.5,y:j+0.5},
       {x:i-0.5,y:j+0.5},
-    ],elv+0.2,player.x,player.y,player.z,player.d/2),PI){
+    ],elv+0.2,player.x,player.y,player.z,player.d/2)){
       player.vx=player.vx<0?player.vx*player.boosterV:player.vx-player.boosterVP;
     }
     break;
@@ -1010,7 +1022,7 @@ function playerCollision(i,j){
       {x:i+0.5001,y:j-0.5},
       {x:i+0.5,y:j+0.5},
       {x:i-0.5,y:j+0.5},
-    ],elv+0.2,player.x,player.y,player.z,player.d/2),PI){
+    ],elv+0.2,player.x,player.y,player.z,player.d/2)){
       player.vx=player.vx>0?player.vx*player.boosterV:player.vx+player.boosterVP;
     }
     break;
