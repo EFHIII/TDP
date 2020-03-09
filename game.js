@@ -764,10 +764,12 @@ function tileShadow(x,y,w,h,z,c,r,type){
     pg.background(c);
     if(type!==undefined){
       pg.push();
+      pg.translate(tileSize/2,tileSize/2);
+      pg.rotate(HALF_PI);
       if(r){
         pg.rotate(r);
       }
-      if((player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<(player.d+0.6)*(player.d+0.6)/4){
+      if(player.z<z+0.2&&(player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<(player.d+0.6)*(player.d+0.6)/4){
         switch(type){
           case("booster"):
             pg.image(boostPadImg,-tileSize/2,-tileSize/2,tileSize,tileSize);
@@ -786,12 +788,7 @@ function tileShadow(x,y,w,h,z,c,r,type){
 
     pg.noStroke();
     pg.fill(0,100);
-    if(r!==undefined){
-      pg.translate(w*tileSize/2,h*tileSize/2);
-      pg.rotate(-r-HALF_PI);
-      pg.translate(-w*tileSize/2,-h*tileSize/2);
-    }
-    else if(r){
+    if(type===undefined&&r){
       pg.translate(w*tileSize/2,h*tileSize/2);
       pg.rotate(-r-HALF_PI);
       pg.translate(-w*tileSize/2,-h*tileSize/2);
@@ -801,25 +798,6 @@ function tileShadow(x,y,w,h,z,c,r,type){
       (player.y+0.5-y+(player.z+player.d-z)/4)*tileSize,
       player.d*tileSize,
       player.d*tileSize);
-    if(0){
-      pg.stroke(0,255,0);
-      pg.noFill();
-      pg.rect(10,10,w*tileSize-20,h*tileSize-20);
-      pg.fill(255,255,0);
-      pg.noStroke();
-      pg.ellipse(w*tileSize/2,h*tileSize/2,10,10);
-      for(var i=0;i<2;i++){
-        for(var j=0;j<2;j++){
-          pg.ellipse(10+(w*tileSize-20)*i,10+(h*tileSize-20)*j,5,5);
-        }
-      }
-      pg.fill(255,0,0);
-      pg.ellipse(10,10,10,10);
-      pg.fill(0,0,255);
-      pg.ellipse(w*tileSize-10,10,10,10);
-      pg.fill(0,255,0);
-      pg.ellipse(10,h*tileSize-10,10,10);
-    }
     texture(pg);
   }
   else if(type!==undefined){
@@ -827,10 +805,11 @@ function tileShadow(x,y,w,h,z,c,r,type){
 
     pg.background(c);
     pg.push();
+    pg.translate(tileSize/2,tileSize/2);
     if(r){
       pg.rotate(r);
     }
-    if((player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<(player.d+0.6)*(player.d+0.6)/4){
+    if(player.z<z+0.2&&(player.x-x)*(player.x-x)+(player.y-y)*(player.y-y)<(player.d+0.6)*(player.d+0.6)/4){
       switch(type){
         case("booster"):
           pg.image(boostPadImg,-tileSize/2,-tileSize/2,tileSize,tileSize);
@@ -853,7 +832,7 @@ function tileShadow(x,y,w,h,z,c,r,type){
   }
 
   translate((x+w/2-0.5)*tileSize,(y+h/2-0.5)*tileSize,(z-1)*tileSize*ZMAG);
-  if(r){rotateZ(r);}
+  if(r&&type===undefined){rotateZ(r);}
 }
 function drawBox(x,y,w,h,z,r,g,b,top){
   push();
@@ -1309,7 +1288,8 @@ function stepPlayer() {
       switch(currentMap.grid[Y][X]){
         case('B')://booster
         if(player.z<elv){
-          player.vz=-player.vz*0.5+player.bumperV;
+          player.vz=-player.vz*0.7;
+          if(player.vz<player.a/2){player.vz=0;}
           i=20;
           bouncing=true;
           player.z=ground;
@@ -1566,19 +1546,19 @@ function drawMap(paused){
         break;
         case("v"):
           push();
-          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),undefined,"booster",PI);
+          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),PI,"booster");
           plane(tileSize,tileSize);
           pop();
         break;
         case(">"):
           push();
-          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),undefined,"booster",HALF_PI);
+          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),HALF_PI,"booster");
           plane(tileSize,tileSize);
           pop();
         break;
         case("<"):
           push();
-          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),undefined,"booster",HALF_PI*3);
+          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),HALF_PI*3,"booster");
           plane(tileSize,tileSize);
           pop();
         break;
