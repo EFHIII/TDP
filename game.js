@@ -183,6 +183,38 @@ const gameMaps=[
     ],
     stars:[420,360,264,228]
   },
+  {
+    title:"bonuses",
+    grid:[
+      " ,###########",
+      ",#{++++++GGG#",
+      "#{+++++++GGG#",
+      "#++++++++GGG#",
+      "#+^+]########",
+      "#+^+#LLLLLLL#",
+      "#+^+#LLLLLLL#",
+      "#+^+}########",
+      "#++++++++++}#",
+      "#[+BB+++++S+#",
+      "l#[++++++++]#",
+      " l##########r",
+    ],
+    elevation:[
+      " 111111111111",
+      "1110000000001",
+      "1100000000001",
+      "1000000000001",
+      "1000111111111",
+      "1000100000001",
+      "1000100000001",
+      "1000111111111",
+      "1000000000011",
+      "1100000000001",
+      "1110000000011",
+      " 111111111111",
+    ],
+    stars:[179,120,96,84]
+  },
 ];
 
 //default save data
@@ -379,6 +411,8 @@ const div={
   rail:[],
   wall:[],
   goal:[],
+  lava:[],
+  bumper:[],
 };
 
 let keys = [];
@@ -412,6 +446,8 @@ const player={
   mx:1,//max acceleration
   blink:30,//blink duration
   blinkV:0.3,
+  bumperV:0.05,
+  boosterV:1.02,
   blinkCooldown:300,
   trailLength:128,
   trailSpeed:0.04
@@ -447,6 +483,8 @@ let mouseIn=false;
 
 let can;
 
+let boostPadImg;
+
 //initialization functions
 function preload() {
   f = loadFont(
@@ -458,6 +496,8 @@ function setup() {
   pg = createGraphics(200, 200);//used for textures (shadow)
 
   frameRate(60);
+
+  boostPadImg=loadImage("boostPad.png");
 
   startingHeight=height;
 
@@ -629,12 +669,16 @@ function setupLevel(lvl,restarting){
   div.rail=[];
   div.wall=[];
   div.goal=[];
+  div.lava=[];
+  div.bumper=[];
 
   for(var i=0;i<10;i++){
     div.floor=div.floor.concat(rectDivision('+S[]{}',i));
     div.rail=div.rail.concat(rectDivision('#',i));
     div.wall=div.wall.concat(rectDivision('w',i));
     div.goal=div.goal.concat(rectDivision('G',i));
+    div.lava=div.lava.concat(rectDivision('L',i));
+    div.bumper=div.bumper.concat(rectDivision('B',i));
   }
 }
 setupLevel(onLevel);
@@ -704,7 +748,7 @@ function drawStar(x,y,s,time,stars){
 //3D  drawing stuff
 var tileSize=0;
 const dirAr=[[0,1],[-1,0],[0,-1],[1,0]];
-function tileShadow(x,y,w,h,z,c,r){
+function tileShadow(x,y,w,h,z,c,r,type){
   if(z<player.z+player.d/2&&
       player.x+0.5>x-player.d&&
       player.x+0.5<x+player.d+w&&
@@ -713,6 +757,13 @@ function tileShadow(x,y,w,h,z,c,r){
     pg.resizeCanvas(w*tileSize, h*tileSize);
 
     pg.background(c);
+    if(type!==undefined){
+      switch(type){
+        case("booster"):
+          pg.image(boostPadImg,0,0,tileSize,tileSize);
+        break;
+      }
+    }
 
     pg.noStroke();
     pg.fill(0,100);
@@ -880,9 +931,31 @@ function playerCollision(i,j){
   let elv=1*currentMap.elevation[j][i];
   let temp;
   switch(t){
+    case('L')://lava
+      if(shapeIntersect([
+        {x:i-0.5001,y:j-0.5},
+        {x:i+0.5001,y:j-0.5},
+        {x:i+0.5,y:j+0.5},
+        {x:i-0.5,y:j+0.5},
+      ],elv+0.2,player.x,player.y,player.z,player.d/2)){
+        setupLevel(onLevel,true);
+      }
+    break;
+    case('^')://booster
+    if(shapeIntersect([
+      {x:i-0.5001,y:j-0.5},
+      {x:i+0.5001,y:j-0.5},
+      {x:i+0.5,y:j+0.5},
+      {x:i-0.5,y:j+0.5},
+    ],elv+0.2,player.x,player.y,player.z,player.d/2)){
+      player.vx*=player.boosterV;
+      player.vy*=player.boosterV;
+      i=20;
+    }
     // normal surface
-    case('+'):
+    case('^')://booster
     case('G'):
+    case('+'):
     case('S'):
     case('#'):
     case('w'):
@@ -968,6 +1041,8 @@ function getGround(x,y){
     case('S'):
     case('#'):
     case('w'):
+    case('^'):
+    case('B'):
       return currentMap.elevation[Y][X];
     case('['):
       return y-Y>x-X?currentMap.elevation[Y][X]:currentMap.elevation[Y][X]-1;
@@ -986,7 +1061,7 @@ function getGround(x,y){
     case(','):
       return Y-y>x-X?-100:currentMap.elevation[Y][X];
     case('G'):
-      if(player.z>=currentMap.elevation[Y][X]){
+      if(!finish&&player.z>=currentMap.elevation[Y][X]){
         finish=true;
         if(!save.mapTimes[currentMap.title] || timer<save.mapTimes[currentMap.title]){
           save.mapTimes[currentMap.title]=timer;
@@ -1101,7 +1176,6 @@ function stepPlayer() {
     trail.push(null);
   }
 
-
   let v = (!!keys[controls.left]^!!keys[controls.right])+(!!keys[controls.up]^!!keys[controls.down])>1?0.7071067811865476:1;
 
   if(keys[controls.up]){
@@ -1148,12 +1222,29 @@ function stepPlayer() {
 
   if(!spinning){spin=0;}
 
-  player.vz-=player.g;
-
   player.z+=player.vz;
 
+  let bouncing=false;
+  for(let i=0;i<PI*2;i+=PI/4){
+    let X=Math.floor(player.x+0.5+cos(i)*(player.d-0.001)/2);
+    let Y=Math.floor(player.y+0.5+sin(i)*(player.d-0.001)/2);
+    if(X>=0&&Y>=0&&Y<currentMap.grid.length&&X<currentMap.grid[Y].length){
+      let elv=currentMap.elevation[Y][X];
+      switch(currentMap.grid[Y][X]){
+        case('B')://booster
+        if(player.z<elv){
+          player.vz=-player.vz*0.9+player.bumperV;
+          i=20;
+          bouncing=true;
+          player.z=ground;
+        }
+      }
+    }
+  }
 
-  if(player.z<=ground){
+  player.vz-=player.g;
+
+  if(!bouncing&&player.z<=ground){
     player.z=ground;
     player.vz=0;
     spinning=false;
@@ -1383,6 +1474,12 @@ function drawMap(paused){
   for(let i=0;i<currentMap.grid.length;i++){
     for(let j=0;j<currentMap.grid[i].length;j++){
       switch(currentMap.grid[i][j]){
+        case("^"):
+          push();
+          tileShadow(j,i,1,1,currentMap.elevation[i][j],color(90+10*currentMap.elevation[i][j]),undefined,"booster");
+          plane(tileSize,tileSize);
+          pop();
+        break;
         case("l"):
           triangleBox(j,i,currentMap.elevation[i][j],1);
         break;
@@ -1432,6 +1529,15 @@ function drawMap(paused){
   }
   for(let i=0;i<div.wall.length;i++){
     drawBox(div.wall[i].x,div.wall[i].y,div.wall[i].w,div.wall[i].h,div.wall[i].z,30,45,50,color(25+5*div.wall[i].z,35+5*div.wall[i].z,40+5*div.wall[i].z));
+  }
+  for(let i=0;i<div.lava.length;i++){
+    push();
+    tileShadow(div.lava[i].x,div.lava[i].y,div.lava[i].w,div.lava[i].h,div.lava[i].z,color(100+10*div.lava[i].z,30,30));
+    plane(div.lava[i].w*tileSize,div.lava[i].h*tileSize);
+    pop();
+  }
+  for(let i=0;i<div.bumper.length;i++){
+    drawBox(div.bumper[i].x,div.bumper[i].y,div.bumper[i].w,div.bumper[i].h,div.bumper[i].z,30,45,80,color(25+5*div.bumper[i].z,35+5*div.bumper[i].z,120+5*div.bumper[i].z));
   }
 
   drawPlayer();
