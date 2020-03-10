@@ -38,6 +38,7 @@ If your computer is already making use of its resources in other applications, t
 This is a bit trickier to solve, but you shouldn't assume this to be the problem immediately; look for other potential causes. I've tested the game on my smart phone, and it runs at a clean 60 FPS, so you'd need a potato of a computer to be suffering. If, however, you are suffering, the obvious solution is to either use a more powerful device, or get a better graphics card for your current device.
 
 ## TODO
+- save anti-aliasing, FPS, and trail settings
 - Main menu
 - game elements
   - checkpoints

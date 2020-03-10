@@ -184,8 +184,96 @@ const gameMaps=[
     stars:[420,360,264,228]
   },
   {
-    title:"bonuses",
+    title:"Towering",
     grid:[
+      "                                  ",
+      "                  #########       ",
+      "   ,#######.      #+++++++#       ",
+      "  ,#{+++#+}#.     #+++++++#       ",
+      " ,#{++<<#++}#.    #####+++#       ",
+      " #{+++++#+++}#    #+++#####       ",
+      " #+++#rl##+++#    #+++#+++#       ",
+      " ####r  l#+^+#    #+++#+++#       ",
+      " #+v+.   #+^+#    #+++#+++#       ",
+      " #+v+#.  #####    #+++#+++#       ",
+      " #[++#####+++######+++#+++#       ",
+      " l#[++#++#+++#++++++++#+++#       ",
+      "  l#[+#>>#+++#++++++++#+++#       ",
+      "   l#[#++#+++#++++++++#+++#       ",
+      "    l#####+++##########+++####### ",
+      "        ww+++ww       #++++GGGGG# ",
+      "        ww+++ww       #++++GGGGG# ",
+      "        w#+++#w       #++++GGGGG# ",
+      "        w#+++#w       #++++GGGGG# ",
+      "        w#+++#w       #++++GGGGG# ",
+      "        w#+++#w       ########### ",
+      "        w#+++#w                   ",
+      "        w#+++#w                   ",
+      "        w#+++#w                   ",
+      "        w#+++#w                   ",
+      "        w#+++#w                   ",
+      "        w#+^+#w                   ",
+      "        w#+^+#w                   ",
+      "        w#+^+#w                   ",
+      "        w#+^+#w                   ",
+      "        w#+^+#w                   ",
+      "        w#+++#w                   ",
+      "        w#+++#w                   ",
+      "        w#+++#w                   ",
+      "        w#+++#w                   ",
+      "        w#+++#w                   ",
+      "        w#+S+#w                   ",
+      "        w#+++#w                   ",
+      "        w#####w                   ",
+      "        wwwwwww                   ",
+    ],
+    elevation:[
+      "                                  ",
+      "                  999999999       ",
+      "   5555555333     766666669       ",
+      "  55544442333     766666669       ",
+      " 5554444422333    766666669       ",
+      " 5544444422233    744498889       ",
+      " 7444999992223    744498889       ",
+      " 76669  992223    744498889       ",
+      " 76669   92223    744498889       ",
+      " 766699  92223    744498889       ",
+      " 77669999900088866644498889       ",
+      " 77766888800084444444498889       ",
+      "  7776888800084444444498889       ",
+      "   777888800084444444498889       ",
+      "    79999900088866666698889999999 ",
+      "        9800089       98888888889 ",
+      "        9600069       98888888889 ",
+      "        9100019       98888888889 ",
+      "        9100019       98888888889 ",
+      "        9100019       98888888889 ",
+      "        9100019       99999999999 ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9100019                   ",
+      "        9111119                   ",
+      "        9999999                   ",
+    ],
+    stars:[780,660,552,420],// subframes needed for each star, 120 subframes = 1 second
+  },
+  {
+    title: "bonuses",
+    grid: [
       " ,###########",
       ",#{++++++GGG#",
       "#{+++++++GGG#",
@@ -197,9 +285,9 @@ const gameMaps=[
       "#+++++>+v++}#",
       "#[+BB+++++S+#",
       "l#[+++^+<++]#",
-      " l##########r",
+      " l##########r"
     ],
-    elevation:[
+    elevation: [
       " 111111111111",
       "1110000000001",
       "1100000000001",
@@ -211,10 +299,10 @@ const gameMaps=[
       "1000000000011",
       "1100000000001",
       "1110000000011",
-      " 111111111111",
+      " 111111111111"
     ],
-    stars:[179,120,96,84]
-  },
+    stars: [179,120,96,84]
+  }
 ];
 
 //default save data
@@ -343,8 +431,8 @@ let settingsObjects=[
           alert("Name can't be blank");
           save.name='';
         }
-        else if(save.name.length>12){
-          alert('Name must be 12 characters or less.');
+        else if(save.name.length>32){
+          alert('Name must be 32 characters or less.');
           save.name='';
         }
       }
@@ -951,11 +1039,12 @@ function playerCollision(i,j){
   if(i<0||j<0){return;}
   let t=currentMap.grid.length>j?(currentMap.grid[j].length>i?currentMap.grid[j][i]:false):false;
   if(t===false){return;}
+  if(player.x+0.5+player.d/2<i||player.x+0.5-player.d/2>i+1||player.y+0.5+player.d/2<j||player.y+0.5-player.d/2>j+1){return;}
   let elv=1*currentMap.elevation[j][i];
   let temp;
   switch(t){
     case('L')://lava
-      if(shapeIntersect([
+      if((player.z<elv+0.2&&player.x+0.5>i&&player.x+0.5<i+1&&player.y+0.5>j&&player.y+0.5<j+1)||shapeIntersect([
         {x:i-0.5001,y:j-0.5},
         {x:i+0.5001,y:j-0.5},
         {x:i+0.5,y:j+0.5},
@@ -965,7 +1054,7 @@ function playerCollision(i,j){
       }
     break;
     case('^')://booster
-    if(shapeIntersect([
+    if((player.z<elv+0.2&&player.x+0.5>i&&player.x+0.5<i+1&&player.y+0.5>j&&player.y+0.5<j+1)||shapeIntersect([
       {x:i-0.5001,y:j-0.5},
       {x:i+0.5001,y:j-0.5},
       {x:i+0.5,y:j+0.5},
@@ -975,7 +1064,7 @@ function playerCollision(i,j){
     }
     break;
     case('v')://booster
-    if(shapeIntersect([
+    if((player.z<elv+0.2&&player.x+0.5>i&&player.x+0.5<i+1&&player.y+0.5>j&&player.y+0.5<j+1)||shapeIntersect([
       {x:i-0.5001,y:j-0.5},
       {x:i+0.5001,y:j-0.5},
       {x:i+0.5,y:j+0.5},
@@ -985,7 +1074,7 @@ function playerCollision(i,j){
     }
     break;
     case('<')://booster
-    if(shapeIntersect([
+    if((player.z<elv+0.2&&player.x+0.5>i&&player.x+0.5<i+1&&player.y+0.5>j&&player.y+0.5<j+1)||shapeIntersect([
       {x:i-0.5001,y:j-0.5},
       {x:i+0.5001,y:j-0.5},
       {x:i+0.5,y:j+0.5},
@@ -995,7 +1084,7 @@ function playerCollision(i,j){
     }
     break;
     case('>')://booster
-    if(shapeIntersect([
+    if((player.z<elv+0.2&&player.x+0.5>i&&player.x+0.5<i+1&&player.y+0.5>j&&player.y+0.5<j+1)||shapeIntersect([
       {x:i-0.5001,y:j-0.5},
       {x:i+0.5001,y:j-0.5},
       {x:i+0.5,y:j+0.5},
@@ -2215,8 +2304,8 @@ function draw() {
         alert("Name can't be blank");
         save.name='';
       }
-      else if(save.name.length>12){
-        alert('Name must be 12 characters or less.');
+      else if(save.name.length>32){
+        alert('Name must be 32 characters or less.');
         save.name='';
       }
     }
